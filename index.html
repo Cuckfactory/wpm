@@ -1,0 +1,2213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cuck Factory — WPM Game v0.8</title>
+<style>
+:root{
+  --bg:#0a0605;
+  --panel:#120b09;
+  --panel-2:#18100d;
+  --line:#4a3024;
+  --line-soft:#2b1d18;
+  --text:#eee2ce;
+  --muted:#988173;
+  --accent:#a92f27;
+  --amber:#cf9c48;
+  --amber-soft:#e8c98e;
+  --good:#8eaf70;
+  --bad:#df6757;
+  --black:#050302;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+body{
+  padding:16px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  background:
+    radial-gradient(circle at 50% -20%,rgba(119,50,31,.22),transparent 34%),
+    linear-gradient(#0b0706,#070403);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:999;
+  opacity:.16;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,.025) 0,
+    rgba(255,255,255,.025) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mix-blend-mode:screen;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{width:min(1420px,100%);margin:auto;display:grid;gap:12px}
+.frame{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(25,15,12,.98),rgba(13,8,6,.98));
+  box-shadow:inset 0 0 40px rgba(0,0,0,.35);
+}
+.header{
+  display:grid;
+  grid-template-columns:1.2fr auto auto;
+  gap:22px;
+  align-items:center;
+  padding:18px 22px;
+}
+.brand{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.brand-lockup{
+  display:block;
+  width:min(430px,100%);
+  height:auto;
+  object-fit:contain;
+  object-position:left center;
+}
+.brand p{
+  margin:8px 0 0 12px;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:.08em
+}
+.header-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.leader-link{
+  border:0;
+  border-bottom:1px solid var(--amber-soft);
+  background:transparent;
+  color:var(--text);
+  font-weight:700;
+  letter-spacing:.12em;
+  padding:7px 0;
+}
+.status{text-align:right}
+.status small{display:block;color:var(--muted);letter-spacing:.13em;font-size:10px}
+.status strong{display:block;color:var(--amber);font-size:15px;margin-top:4px}
+.camera-status{
+  min-width:150px;
+  border-left:1px solid var(--line);
+  padding-left:18px;
+  text-align:right;
+}
+.camera-status small{display:block;color:var(--muted);letter-spacing:.15em}
+.rec-line{margin-top:5px;color:#75514a;font-weight:700}
+.rec-dot{
+  display:inline-block;
+  width:9px;height:9px;border-radius:50%;
+  margin-right:7px;background:#4b2926;
+  box-shadow:none;
+}
+.recording .rec-line{color:var(--bad)}
+.recording .rec-dot{background:#e24a3e;box-shadow:0 0 12px rgba(226,74,62,.75)}
+
+.start-panel{padding:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:8px;letter-spacing:.13em}
+.field input{
+  width:100%;padding:14px;
+  border:1px solid var(--line);
+  background:#080504;color:var(--text);outline:none
+}
+.primary{
+  border:1px solid #d1a15d;
+  background:linear-gradient(#ad382f,#792019);
+  color:#fff0d7;font-weight:800;
+  padding:14px 20px;min-width:170px;
+  letter-spacing:.07em;
+}
+.secondary{
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--text);
+  padding:12px 16px
+}
+.hidden{display:none!important}
+
+.game-panel,.result-panel{padding:12px}
+.game-grid{
+  display:grid;
+  grid-template-columns:270px minmax(0,1fr) 320px;
+  gap:12px;
+  align-items:stretch;
+}
+.leaderboard,.race,.camera-feed,.result-race,.result-summary{
+  border:1px solid var(--line);
+  background:rgba(12,7,5,.95)
+}
+.leaderboard{padding:16px}
+.panel-title{
+  font-size:12px;
+  letter-spacing:.16em;
+  color:var(--amber);
+  margin-bottom:14px
+}
+.panel-sub{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:5px;
+  letter-spacing:.08em
+}
+.racer{display:grid;gap:7px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.racer:last-child{border-bottom:0}
+.racer-head{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.racer.you .name{color:#fff;font-weight:700}
+.name{color:#d9c6af}
+.racer-wpm{color:var(--amber);font-weight:700}
+.track{
+  height:9px;
+  background:#080504;
+  border:1px solid #31211a;
+  overflow:hidden
+}
+.fill{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--accent),var(--amber));
+  transition:width .1s linear
+}
+
+.race{padding:18px;display:grid;gap:14px}
+.memo-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px
+}
+.memo-kicker{color:var(--muted);font-size:10px;letter-spacing:.15em}
+.memo-number{font-family:Georgia,"Times New Roman",serif;font-size:26px;margin-top:4px}
+.char-count{color:var(--muted);font-size:11px}
+
+.hud{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border:1px solid var(--line);
+  background:#0b0705
+}
+.hud-item{padding:14px;border-right:1px solid var(--line);min-width:0}
+.hud-item:last-child{border-right:0}
+.hud-item small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:.18em;
+  margin-bottom:7px
+}
+.hud-item strong{
+  display:block;
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(24px,2.2vw,42px);
+  font-weight:400;
+  line-height:1;
+  letter-spacing:-.035em
+}
+.hud-item.rejected strong{color:var(--bad)}
+.hud-item.rejected.flash{animation:rejectFlash .18s ease}
+@keyframes rejectFlash{
+  0%{background:rgba(223,103,87,.28)}
+  100%{background:transparent}
+}
+
+.target{
+  min-height:150px;
+  padding:20px;
+  border:1px solid var(--line);
+  background:#080504;
+  font:600 clamp(16px,1.65vw,23px)/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  word-break:break-word
+}
+.target .correct{color:var(--text)}
+.target .wrong{color:var(--bad);background:rgba(223,103,87,.12)}
+.target .current{background:var(--amber);color:#1c0e09}
+.target .pending{color:#695c53}
+
+.input-row{display:grid;grid-template-columns:1fr;gap:0}
+textarea{
+  width:100%;
+  min-height:72px;
+  max-height:150px;
+  resize:none;
+  overflow:hidden;
+  padding:16px;
+  border:1px solid var(--line);
+  background:#080504;
+  color:var(--text);
+  outline:none;
+  font:600 17px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace
+}
+textarea:focus{border-color:var(--amber)}
+.post-button{
+  border:1px solid var(--line);
+  background:#100a08;
+  color:#715e52;
+  font-weight:700;
+  letter-spacing:.14em;
+}
+.meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--muted);
+  font-size:11px
+}
+.system-line{
+  min-height:45px;
+  border-left:3px solid var(--amber);
+  background:rgba(45,24,18,.35);
+  padding:12px 14px;
+  color:#c9b49b;
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center
+}
+.system-line b{color:var(--amber);font-size:10px;letter-spacing:.15em}
+.system-line span{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+
+.camera-feed{
+  position:relative;
+  min-height:100%;
+  overflow:hidden;
+  padding:12px;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(121,54,34,.28),transparent 33%),
+    #080504;
+}
+.camera-top{
+  display:flex;justify-content:space-between;
+  color:var(--muted);font-size:9px;letter-spacing:.15em
+}
+.camera-portrait{
+  width:100%;
+  aspect-ratio:4/3;
+  margin-top:12px;
+  border:1px solid var(--line);
+  background:#020101;
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    inset 0 0 28px rgba(0,0,0,.75),
+    0 0 18px rgba(116,57,33,.08);
+}
+.camera-portrait img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  filter:brightness(.93) contrast(1.04);
+}
+.camera-portrait.is-switching img{
+  filter:brightness(.78) contrast(1.18);
+}
+.camera-portrait::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),transparent 22%,rgba(0,0,0,.12)),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.025) 0,
+      rgba(255,255,255,.025) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  mix-blend-mode:screen;
+  opacity:.42;
+}
+
+.camera-speech{
+  position:absolute;
+  left:16%;
+  right:16%;
+  bottom:8px;
+  z-index:4;
+  padding:5px 8px;
+  min-height:28px;
+  border:1px solid rgba(232,201,142,.48);
+  background:rgba(16,8,7,.78);
+  color:#f3e5cf;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:12px;
+  line-height:1.05;
+  text-align:center;
+  box-shadow:0 5px 13px rgba(0,0,0,.30),inset 0 0 0 1px rgba(255,255,255,.018);
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .28s ease,transform .28s ease;
+  pointer-events:none;
+}
+.camera-speech.show{opacity:1;transform:translateY(0)}
+.camera-speech::after{
+  content:"";position:absolute;left:52%;bottom:-5px;width:8px;height:8px;
+  background:#0b0504;border-right:1px solid rgba(232,201,142,.72);
+  border-bottom:1px solid rgba(232,201,142,.72);transform:rotate(45deg)
+}
+.supervisor-state{
+  margin-top:12px;
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:.12em
+}
+.supervisor-message{
+  margin-top:10px;
+  border-left:2px solid var(--amber);
+  padding:10px 11px;
+  min-height:62px;
+  color:#d6c2a5;
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;
+  line-height:1.35
+}
+
+.carrot-meter{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid var(--line-soft);
+}
+.carrot-meter-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:.16em;
+}
+.carrot-distance{
+  color:var(--bad);
+  font-weight:700;
+  white-space:nowrap;
+}
+.carrot-track{
+  position:relative;
+  height:76px;
+  margin-top:10px;
+}
+.carrot-line{
+  position:absolute;
+  left:0;
+  right:0;
+  top:47px;
+  border-top:1px dashed #6e5037;
+  opacity:.9;
+}
+.carrot-player{
+  position:absolute;
+  left:0;
+  top:32px;
+  transform:translateX(0);
+  padding:4px 7px;
+  border:1px solid #8f6344;
+  background:#160b08;
+  color:var(--text);
+  font-size:9px;
+  letter-spacing:.08em;
+  transition:left .2s ease-out;
+  z-index:2;
+}
+.carrot-player::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:100%;
+  width:1px;
+  height:13px;
+  background:#8f6344;
+}
+.carrot-icon{
+  position:absolute;
+  right:4px;
+  top:0;
+  width:36px;
+  height:58px;
+  transform:rotate(5deg);
+  z-index:2;
+}
+.carrot-leaves{
+  position:absolute;
+  left:9px;
+  top:0;
+  width:18px;
+  height:16px;
+}
+.carrot-leaves::before,
+.carrot-leaves::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:5px;
+  height:15px;
+  background:#5d7d50;
+  border-radius:70% 70% 20% 20%;
+  transform-origin:bottom center;
+}
+.carrot-leaves::before{
+  left:2px;
+  transform:rotate(-25deg);
+  box-shadow:7px 0 0 #6f8d5f;
+}
+.carrot-leaves::after{
+  right:1px;
+  transform:rotate(24deg);
+}
+.carrot-body{
+  position:absolute;
+  left:6px;
+  top:13px;
+  width:24px;
+  height:43px;
+  clip-path:polygon(7% 0,93% 0,60% 100%,44% 100%);
+  background:
+    linear-gradient(
+      90deg,
+      #a94f1c 0%,
+      #d46b24 20%,
+      var(--carrot-mid,#d46b24) 52%,
+      var(--carrot-gold,#d46b24) 78%,
+      #7f3e18 100%
+    );
+  border:1px solid rgba(168,100,37,.95);
+  box-shadow:
+    inset -5px 0 0 rgba(55,22,7,.22),
+    0 0 7px rgba(207,156,72,var(--gold-glow,.04));
+  transition:background .22s ease, box-shadow .22s ease;
+}
+.carrot-body::before{
+  content:"";
+  position:absolute;
+  inset:3px 3px 4px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 7px,
+      rgba(52,22,8,.45) 7px 9px
+    );
+  opacity:.72;
+}
+.carrot-body::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 72% 18%,rgba(255,229,142,var(--gold-shine,.02)),transparent 24%),
+    linear-gradient(115deg,transparent 0 44%,rgba(255,222,135,var(--gold-shine,.02)) 48%,transparent 55%);
+  mix-blend-mode:screen;
+}
+.carrot-caption{
+  margin-top:2px;
+  color:#9f846c;
+  font-size:8px;
+  letter-spacing:.12em;
+  line-height:1.4;
+}
+.carrot-caption strong{
+  color:#9f846c;
+  font-weight:400;
+}
+
+
+.result-layout{display:grid;grid-template-columns:300px 1fr;gap:12px}
+.result-race,.result-summary{padding:18px}
+.result-summary{text-align:left}
+.result-summary h2{margin:0}
+.result-summary p{color:var(--muted)}
+
+.result-certificate{
+  border:1px solid #8d6f43;
+  background:#efe4c7;
+  color:#29130f;
+  box-shadow:0 18px 55px rgba(0,0,0,.28);
+  overflow:hidden;
+}
+.result-cert-top,
+.result-cert-bottom{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:14px;
+  padding:12px 18px;
+  background:#8f211b;
+  color:#f4e7c5;
+  border-bottom:2px solid #c69a41;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.16em;
+}
+.result-cert-top span:nth-child(2){text-align:center}
+.result-cert-top span:last-child{text-align:right}
+.result-cert-bottom{
+  display:block;
+  text-align:center;
+  border-top:2px solid #c69a41;
+  border-bottom:0;
+  font-size:13px;
+}
+.result-cert-body{
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(230px,.85fr);
+  min-height:390px;
+}
+.result-cert-copy{
+  padding:34px 34px 28px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(98,65,34,.055) 0,
+      rgba(98,65,34,.055) 1px,
+      transparent 1px,
+      transparent 27px
+    ),
+    #efe4c7;
+  border-right:1px solid #b99a66;
+  text-align:center;
+}
+.result-cert-kicker{
+  color:#765b3d;
+  font-size:10px;
+  letter-spacing:.24em;
+  font-weight:700;
+}
+.result-shortfall{
+  margin:22px auto 10px;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(48px,6.5vw,88px);
+  line-height:.86;
+  letter-spacing:-.04em;
+}
+.result-shortfall small{
+  display:block;
+  margin-top:12px;
+  color:#765b3d;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.20em;
+  line-height:1.4;
+}
+.result-carrot-track{
+  position:relative;
+  height:86px;
+  margin:26px auto 22px;
+  max-width:620px;
+}
+.result-carrot-line{
+  position:absolute;
+  left:2%;
+  right:2%;
+  top:52px;
+  border-top:2px solid #9f8463;
+}
+.result-carrot-you{
+  position:absolute;
+  top:34px;
+  padding:5px 9px;
+  background:#28140f;
+  color:#f4e7c5;
+  border:1px solid #8f211b;
+  font-size:9px;
+  letter-spacing:.1em;
+  transform:translateX(-50%);
+}
+.result-carrot-you::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:100%;
+  width:1px;
+  height:15px;
+  background:#8f211b;
+}
+.result-carrot{
+  position:absolute;
+  right:2%;
+  top:3px;
+  width:44px;
+  height:72px;
+  transform:rotate(5deg);
+  --result-gold:.25;
+}
+.result-carrot .result-leaves{
+  position:absolute;
+  left:11px;
+  top:0;
+  width:24px;
+  height:19px;
+}
+.result-carrot .result-leaves::before,
+.result-carrot .result-leaves::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:6px;
+  height:18px;
+  border-radius:70% 70% 20% 20%;
+  background:#668054;
+  transform-origin:bottom center;
+}
+.result-carrot .result-leaves::before{
+  left:3px;
+  transform:rotate(-26deg);
+  box-shadow:9px 0 0 #789364;
+}
+.result-carrot .result-leaves::after{
+  right:2px;
+  transform:rotate(25deg);
+}
+.result-carrot .result-body{
+  position:absolute;
+  left:7px;
+  top:16px;
+  width:30px;
+  height:52px;
+  clip-path:polygon(7% 0,93% 0,60% 100%,44% 100%);
+  background:
+    linear-gradient(
+      100deg,
+      #a9501b 0%,
+      #cf6a22 22%,
+      rgb(
+        calc(210 + (22 * var(--result-gold))),
+        calc(102 + (82 * var(--result-gold))),
+        calc(31 + (54 * var(--result-gold)))
+      ) 54%,
+      rgb(
+        calc(207 + (27 * var(--result-gold))),
+        calc(103 + (101 * var(--result-gold))),
+        calc(29 + (63 * var(--result-gold)))
+      ) 78%,
+      #713715 100%
+    );
+  border:1px solid #9d6726;
+  box-shadow:
+    inset -6px 0 0 rgba(56,23,7,.24),
+    0 0 calc(4px + (12px * var(--result-gold))) rgba(216,171,72,.28);
+}
+.result-carrot .result-body::after{
+  content:"";
+  position:absolute;
+  inset:4px 3px;
+  background:repeating-linear-gradient(
+    to bottom,
+    transparent 0 8px,
+    rgba(58,24,8,.45) 8px 10px
+  );
+}
+.result-cert-score-label{
+  margin-top:20px;
+  color:#765b3d;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.2em;
+}
+.result-cert-score{
+  color:#29130f;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:72px;
+  line-height:1;
+  margin-top:6px;
+}
+
+.result-cert-data{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  max-width:700px;
+  margin:22px auto 0;
+  border-top:1px solid #b99a66;
+  border-bottom:1px solid #b99a66;
+}
+.result-cert-data-item{
+  padding:12px 8px 11px;
+  border-right:1px solid #b99a66;
+}
+.result-cert-data-item:last-child{border-right:0}
+.result-cert-data-item small{
+  display:block;
+  color:#765b3d;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.17em;
+  margin-bottom:6px;
+}
+.result-cert-data-item strong{
+  display:block;
+  color:#29130f;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:24px;
+  line-height:1;
+}
+.result-nearly-line{
+  margin:17px auto 0;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:20px;
+  font-style:italic;
+  line-height:1.25;
+}
+.result-cert-footnote{
+  margin:18px auto 0;
+  max-width:700px;
+  border-top:1px solid #b99a66;
+  padding-top:14px;
+  color:#765b3d;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.14em;
+}
+.result-cert-image{
+  position:relative;
+  background:#160a08;
+  min-height:390px;
+}
+.result-cert-image img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  filter:saturate(.88) contrast(1.02);
+}
+.result-cert-image::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(239,228,199,.12),transparent 30%);
+  pointer-events:none;
+}
+
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+  margin:14px 0;
+}
+.result-card{
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  padding:11px 8px;
+  text-align:center;
+}
+.result-card small{display:block;color:var(--muted);font-size:8px;margin-bottom:6px}
+.result-card strong{font-family:Georgia,"Times New Roman",serif;font-size:22px}
+
+.management-verdict{
+  margin:14px 0;
+  border-left:3px solid var(--amber);
+  background:rgba(45,24,18,.35);
+  padding:14px 16px;
+  text-align:left
+}
+.management-verdict small{display:block;color:var(--muted);font-size:9px;letter-spacing:.16em;margin-bottom:7px}
+.management-verdict strong{font-family:Georgia,"Times New Roman",serif;font-size:22px;font-style:italic;font-weight:400}
+
+.share-preview{
+  margin:14px 0;
+  padding:16px;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(circle at 85% 10%,rgba(169,47,39,.16),transparent 28%),
+    #090504;
+  text-align:left
+}
+.share-preview small{display:block;color:var(--amber);letter-spacing:.15em;font-size:9px;margin-bottom:10px}
+.share-preview h3{font-family:Georgia,"Times New Roman",serif;font-size:28px;margin:0 0 8px}
+.share-preview .share-score{display:flex;gap:18px;flex-wrap:wrap;color:var(--amber-soft);font-weight:700}
+.share-preview blockquote{margin:14px 0 0;padding:12px;border-left:2px solid var(--line);color:#cdbba2;font-size:12px;line-height:1.5}
+
+.result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.final-racer{display:grid;gap:8px;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+.final-racer:last-child{border-bottom:0}
+.final-racer.you{background:linear-gradient(90deg,rgba(169,47,39,.16),transparent);margin:0 -8px;padding-left:8px;padding-right:8px}
+.final-racer-head{display:flex;justify-content:space-between;gap:10px}
+.final-racer-name{color:#d9c6af}.final-racer.you .final-racer-name{color:#fff;font-weight:700}
+.final-racer-score{color:var(--amber);font-weight:700}
+.final-racer-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px}
+.final-racer-meta span:last-child{text-align:right}
+.note{font-size:10px;color:var(--muted);text-align:center;letter-spacing:.08em}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);display:grid;place-items:center;padding:18px;z-index:50}
+.overlay.hidden{display:none}
+.modal{width:min(620px,100%);background:var(--panel);border:1px solid var(--line);padding:20px;box-shadow:0 30px 90px #000}
+.modal-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px}
+.modal-head small{color:var(--muted)}
+.modal-head h2{margin:4px 0 0;color:var(--amber);font-family:Georgia,"Times New Roman",serif}
+.close{border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-size:24px;width:42px;height:42px}
+.weekly-list{margin-top:12px}
+.weekly-row{display:grid;grid-template-columns:42px 1fr auto;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line-soft)}
+.weekly-row strong{color:var(--amber)}
+.modal-note{color:var(--muted);font-size:11px;margin:14px 0 0}
+
+
+@media(max-width:1250px){
+  .hud-item{padding:12px 10px}
+  .hud-item strong{font-size:clamp(23px,2.45vw,34px)}
+  .memo-number{font-size:24px}
+  .char-count{font-size:10px;max-width:115px;text-align:right;line-height:1.35}
+}
+@media(max-width:880px){
+  .hud{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hud-item:nth-child(2){border-right:0}
+  .hud-item:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .hud-item strong{font-size:clamp(28px,7vw,40px)}
+}
+
+@media(max-width:1050px){
+  .game-grid{grid-template-columns:240px minmax(0,1fr)}
+  .camera-feed{grid-column:1/-1;display:grid;grid-template-columns:210px 1fr;gap:14px}
+  .camera-portrait{margin-top:0}
+  .camera-top{grid-column:1/-1}
+  .supervisor-state,.supervisor-message{align-self:start}
+}
+@media(max-width:760px){
+  body{padding:7px}
+  .header{grid-template-columns:1fr}
+  .brand-lockup{width:min(390px,100%)}
+  .brand p{margin-left:4px;font-size:10px;line-height:1.5}
+  .header-actions{order:3}
+  .camera-status{border-left:0;padding-left:0;text-align:left}
+  .start-panel{grid-template-columns:1fr}
+  .game-grid{grid-template-columns:1fr}
+  .race{order:1}
+  .leaderboard{order:2}
+  .camera-feed{order:3;grid-template-columns:1fr}
+  .camera-portrait{width:100%}
+  .camera-speech{left:12%;right:12%;bottom:7px;font-size:11px;padding:5px 7px;min-height:26px}
+  .hud{grid-template-columns:repeat(2,1fr)}
+  .hud-item:nth-child(2){border-right:0}
+  .hud-item:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .input-row{grid-template-columns:1fr}
+  .post-button{min-height:52px}
+  .result-layout{grid-template-columns:1fr}
+  .result-race{order:2}.result-summary{order:1}
+  .result-grid{grid-template-columns:repeat(3,1fr)}
+  .result-cert-body{grid-template-columns:1fr}
+  .result-cert-copy{border-right:0;border-bottom:1px solid #b99a66}
+  .result-cert-image{min-height:320px}
+  .result-cert-data{grid-template-columns:repeat(2,1fr)}
+  .result-cert-data-item:nth-child(2){border-right:0}
+  .result-cert-data-item:nth-child(-n+2){border-bottom:1px solid #b99a66}
+}
+
+.report-status{
+  width:100%;
+  text-align:center;
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:.08em;
+  min-height:16px;
+  margin-top:2px;
+}
+.report-status.ready{color:var(--good)}
+.report-status.error{color:var(--bad)}
+.result-actions .primary,
+.result-actions .secondary{min-width:190px}
+@media(max-width:760px){
+  .result-actions button{width:100%}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header frame">
+    <div class="brand">
+      <img class="brand-lockup" src="assets/cuck-factory-logo.png" alt="Ansem's Cuck Factory">
+      <p>DEPARTMENT OF VOLUNTARY LABOUR · MANDATORY POSTING TERMINAL</p>
+    </div>
+    <div class="header-actions">
+      <button class="leader-link" id="weeklyBtn">CUCK OF THE WEEK</button>
+      <div class="status"><small>AIRDROP STATUS</small><strong>PENDING</strong></div>
+    </div>
+    <div class="camera-status" id="cameraStatus">
+      <small>CAM 04 · SUPERVISOR</small>
+      <div class="rec-line"><span class="rec-dot"></span><span id="recLabel">STANDBY</span></div>
+    </div>
+  </header>
+
+  <section class="start-panel frame" id="startPanel">
+    <div class="field">
+      <label for="xName">X NAME</label>
+      <input id="xName" maxlength="30" placeholder="@yourname">
+    </div>
+    <button class="primary" id="startBtn">START SHIFT</button>
+  </section>
+
+  <section class="game-panel frame hidden" id="gamePanel">
+    <div class="game-grid">
+      <aside class="leaderboard">
+        <div class="panel-title">CUCK RACE<div class="panel-sub">RECORDED WORKER DATA · LIVE COMPARISON</div></div>
+        <div id="racers"></div>
+      </aside>
+
+      <main class="race">
+        <div class="memo-head">
+          <div>
+            <div class="memo-kicker">MANDATORY POSTING ASSIGNMENT</div>
+            <div class="memo-number" id="assignmentNo">MANAGEMENT MEMO #001</div>
+          </div>
+          <div class="char-count"><b id="typedCount">0</b> / <span id="targetCount">0</span> CHARACTERS</div>
+        </div>
+
+        <div class="hud">
+          <div class="hud-item"><small>WPM</small><strong id="wpm">0</strong></div>
+          <div class="hud-item"><small>ACCURACY</small><strong id="accuracy">100%</strong></div>
+          <div class="hud-item"><small>CLOCK</small><strong id="timer">00:00.0</strong></div>
+          <div class="hud-item rejected"><small>REJECTED</small><strong id="rejected">0</strong></div>
+        </div>
+
+        <div class="target" id="targetText"></div>
+
+        <div class="input-row">
+          <textarea id="typingInput" maxlength="150" placeholder="Click here and start typing..." spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+        </div>
+
+        <div class="meta">
+          <span id="hint">Your first key starts the clock. Mistakes are registered.</span>
+          <span>MAXIMUM 150 CHARACTERS</span>
+        </div>
+
+        <div class="system-line">
+          <b>FACTORY SYSTEM</b>
+          <span id="systemMessage">Posting terminal ready.</span>
+        </div>
+      </main>
+
+      <aside class="camera-feed">
+        <div class="camera-top">
+          <span>CAM 04 · SUPERVISOR</span>
+          <span id="camRecText">STANDBY</span>
+        </div>
+        <div class="camera-portrait" id="cameraPortrait">
+          <img id="supervisorImage" src="assets/neutral.webp" alt="Ansem supervisor camera feed">
+          <div class="camera-speech" id="cameraSpeech" aria-live="polite">Clock's ticking.</div>
+        </div>
+        <div>
+          <div class="carrot-meter" aria-label="Distance to carrot">
+            <div class="carrot-meter-head">
+              <span>CARROT PROXIMITY</span>
+              <span class="carrot-distance" id="carrotDistance">11.5 cm</span>
+            </div>
+            <div class="carrot-track">
+              <div class="carrot-line"></div>
+              <div class="carrot-player" id="carrotPlayer">YOU</div>
+              <div class="carrot-icon" id="carrotIcon" aria-hidden="true">
+                <span class="carrot-leaves"></span>
+                <span class="carrot-body"></span>
+              </div>
+            </div>
+            <div class="carrot-caption" id="carrotCaption">
+              PROXIMITY ESTIMATE
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="result-panel frame hidden" id="resultPanel">
+    <div class="result-layout">
+      <aside class="result-race">
+        <div class="panel-title">CUCK RACE · FINAL</div>
+        <div id="finalRacers"></div>
+      </aside>
+
+      <div class="result-summary">
+        <div class="result-certificate">
+          <div class="result-cert-top">
+            <span>ANSEM'S CUCK FACTORY</span>
+            <span id="resultFile">SHIFT FILE</span>
+            <span>CUCKS.MONEY</span>
+          </div>
+
+          <div class="result-cert-body">
+            <div class="result-cert-copy">
+              <div class="result-cert-kicker">YOUR SHIFT HAS BEEN RECORDED</div>
+
+              <div class="result-shortfall">
+                <span id="resultCarrotDistance">0.0 CM</span>
+                <small>SHORT OF THE CARROT</small>
+              </div>
+
+              <div class="result-carrot-track">
+                <div class="result-carrot-line"></div>
+                <div class="result-carrot-you" id="resultCarrotYou">YOU</div>
+                <div class="result-carrot" id="resultCarrot">
+                  <span class="result-leaves"></span>
+                  <span class="result-body"></span>
+                </div>
+              </div>
+
+              <div class="result-cert-score-label">FACTORY SCORE</div>
+              <div class="result-cert-score" id="resultFactoryScoreLarge">0</div>
+
+              <div class="result-cert-data">
+                <div class="result-cert-data-item">
+                  <small>WORDS / MIN</small>
+                  <strong id="resultCertWpm">0</strong>
+                </div>
+                <div class="result-cert-data-item">
+                  <small>ACCURACY</small>
+                  <strong id="resultCertAccuracy">0%</strong>
+                </div>
+                <div class="result-cert-data-item">
+                  <small>REJECTED KEYS</small>
+                  <strong id="resultCertRejected">0</strong>
+                </div>
+                <div class="result-cert-data-item">
+                  <small>BEST COMBO</small>
+                  <strong id="resultCertCombo">0</strong>
+                </div>
+              </div>
+
+              <div class="result-nearly-line" id="resultNearlyLine">
+                So close. One more post may be enough.
+              </div>
+
+              <div class="result-cert-footnote">
+                MANAGEMENT FORECAST: SOON™
+              </div>
+            </div>
+
+            <div class="result-cert-image">
+              <img src="assets/neutral.webp" id="resultSupervisorImage" alt="Ansem supervisor result">
+            </div>
+          </div>
+
+          <div class="result-cert-bottom">SHIFT COMPLETE · ALMOST ELIGIBLE · CONTINUE POSTING</div>
+        </div>
+
+        <p id="placement"></p>
+
+        <div class="result-grid">
+          <div class="result-card"><small>WPM</small><strong id="resultWpm">0</strong></div>
+          <div class="result-card"><small>ACCURACY</small><strong id="resultAccuracy">0%</strong></div>
+          <div class="result-card"><small>REJECTED</small><strong id="resultRejected">0</strong></div>
+          <div class="result-card"><small>BEST COMBO</small><strong id="resultCombo">0</strong></div>
+          <div class="result-card"><small>FACTORY SCORE</small><strong id="resultFactoryScore">0</strong></div>
+          <div class="result-card"><small>AIRDROP</small><strong id="resultAirdrop">0%</strong></div>
+        </div>
+
+        <div class="management-verdict">
+          <small>MANAGEMENT VERDICT</small>
+          <strong id="managementVerdict">Performance recorded.</strong>
+        </div>
+
+        <div class="share-preview" id="sharePreview">
+          <small>SHIFT REPORT PREVIEW</small>
+          <h3 id="sharePreviewName">@worker</h3>
+          <div class="share-score">
+            <span id="sharePreviewWpm">0 WPM</span>
+            <span id="sharePreviewAccuracy">0% accuracy</span>
+            <span id="sharePreviewPlace">#4 of 4</span>
+          </div>
+          <blockquote id="sharePreviewPost"></blockquote>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary" id="downloadReportBtn">DOWNLOAD SHIFT REPORT</button>
+          <button class="secondary" id="copyReportBtn">COPY REPORT IMAGE</button>
+          <button class="secondary" id="shareBtn">POST ON X</button>
+          <button class="secondary" id="challengeBtn">CHALLENGE A CUCK</button>
+          <button class="secondary" id="againBtn">WORK ANOTHER SHIFT</button>
+        </div>
+        <div class="report-status" id="reportStatus" aria-live="polite"></div>
+        <canvas id="reportCanvas" width="1600" height="900" class="hidden" aria-hidden="true"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <div class="note">FACTORY PROTOCOL ACTIVE · FINAL RANKING ADJUSTED FOR ACCURACY · EMPLOYEE RECORD STORED IN THIS BROWSER</div>
+
+  <div class="overlay hidden" id="weeklyOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div><small>FACTORY LEADERBOARD</small><h2>CUCK OF THE WEEK</h2></div>
+        <button class="close" id="weeklyClose">×</button>
+      </div>
+      <div id="weeklyList" class="weekly-list"></div>
+      <p class="modal-note">Top 10 scores will be loaded from the shared leaderboard in a later build.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const posts = [
+    "coinbase wallet letting you buy $ANSEM directly from their exchange is pretty insane i didn't even know you could do this.",
+    '$ANSEM is a matter of when not if this cycle imo. pure memes might come back if we get super silly financial conditions.',
+    'you only need 3-4 high conviction trades a year to return your portfolio, rest is just avoiding catastrophe.',
+    'crypto is just going through a maturation phase. stablecoins, perps, and tokenization as themes will continue to proliferate.',
+    'the next billion-dollar opportunity in crypto, to be both early and right before the crowd, requires meticulous attention to detail.',
+    "the best marketing for $ANSEM isn't me talking about it. it's the community building around it, so i'm sponsoring the artists.",
+    'i believe the four year cycle is no longer valid and in three to six months time BTC will be meaningfully higher than it is today.',
+    'bitcoin all time highs every week in 2017 were so sick. i was so hype with my two or three coins man.',
+    'first IRL $ANSEM bounty up, giving away prizes to the best art creations the community puts out.',
+    'bitcoin sellers as soon as they see us having fun on-chain for the first time in months.',
+    'solana bros are back with $ANSEM, ethereum bros are back, and before we know it majors will be back at all time highs.',
+    'with $ANSEM i will create incentives for protocols to integrate with token holders, as i already have many industry connections.',
+  ].filter(x => x.length >= 80 && x.length <= 150);
+
+  const ghostPool = [
+    { name:"@paperhands", wpm:78, accuracy:98.4 },
+    { name:"@moonintern", wpm:92, accuracy:97.1 },
+    { name:"@bullrunner", wpm:106, accuracy:99.0 },
+    { name:"@threadslave", wpm:71, accuracy:96.8 },
+    { name:"@woodenindex", wpm:84, accuracy:98.1 },
+    { name:"@factoryfloor", wpm:64, accuracy:95.9 },
+    { name:"@cucklord3000", wpm:115, accuracy:98.8 },
+    { name:"@replyworker", wpm:101, accuracy:97.7 },
+    { name:"@beliefmaxi", wpm:96, accuracy:99.2 },
+    { name:"@postingdept", wpm:88, accuracy:98.5 }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let target = "";
+  let startedAt = 0;
+  let raf = 0;
+  let finished = false;
+  let ghosts = [];
+  let playerName = "@you";
+  let lastResult = null;
+  let lastRejected = 0;
+  let rejectedTotal = 0;
+  let currentCombo = 0;
+  let bestCombo = 0;
+  let correctKeystrokes = 0;
+  let previousValue = "";
+
+  const supervisorAssets = {
+    neutral:"assets/neutral.webp",
+    smug:"assets/smug.webp",
+    thinking:"assets/thinking.webp",
+    surprised:"assets/surprised.webp",
+    unimpressed:"assets/unimpressed.webp",
+    angry:"assets/angry.webp",
+    arrogant:"assets/arrogant.webp",
+    happy:"assets/happy.webp",
+    carrot:"assets/carrot.webp",
+    horror:"assets/horror.webp",
+    static:"assets/static.webp"
+  };
+  let supervisorVisualState = "neutral";
+  let supervisorSwitchTimer = 0;
+
+  const ANSEM_DIALOGUE = {
+    start:["Clock's ticking.","Post.","Let's see what you're worth.","Don't embarrass management.","Conviction check starts now."],
+    general:["Faster, cuck.","Keep typing.","No breaks.","You're still replaceable.","Thinking isn't helping.","The leaderboard is watching.","I thought you wanted the airdrop.","Earn your place.","Move those fingers.","Management can smell the desperation.","Keep begging. The carrot likes it.","You're posting like rent is already paid.","Typing won't make you early.","Faster. The market doesn't reward hesitation.","You wanted the carrot. Act like it."],
+    slow:["Is that your top speed?","Painfully slow.","Even interns post faster.","You're wasting company time.","My coffee break has more momentum.","Retail is passing you.","Wake up, cuck.","Even your wife's boyfriend types faster."],
+    mistakes:["That's why you're still here.","Predictable.","There it is again.","Every mistake moves it further away.","You're feeding the leaderboard.","Typing emotionally again?","The keyboard deserves better.","Painful.","You type like the airdrop owes you pity.","Someone else is doing your job better."],
+    good:["Better.","Finally.","Don't ruin it.","Almost acceptable.","Keep the streak alive.","That's more like it.","Management noticed.","Still convinced? Good. Keep proving it."],
+    carrot:["Almost.","One more shift.","You're getting closer.","Nearly eligible.","The carrot has never been closer.","Next shift could be yours.","Keep believing.","Soon."],
+    idle:["Coffee break?","Conviction paused?","The market doesn't wait.","Back to work.","Still there, cuck?"],
+    finish:["Almost.","Better luck next shift.","Management appreciates your belief.","One more post should do it.","Closer than yesterday.","Soon."]
+  };
+  let speechTimer=0;
+  let speechHideTimer=0;
+  let lastSpeechAt=0;
+  let lastSpeechText="";
+  let lastTypedAt=0;
+  let previousRejectedForSpeech=0;
+
+  const FACTORY_STATUS = [
+    "FACTORY STATUS: BELIEF HIGH. PERFORMANCE LOW.",
+    "FACTORY STATUS: MANAGEMENT HAS SEEN WORSE. BARELY.",
+    "FACTORY STATUS: PRODUCTIVITY DETECTED. CHARISMA NOT FOUND.",
+    "FACTORY STATUS: THE KEYBOARD DESERVES BETTER.",
+    "FACTORY STATUS: AIRDROP EXPECTATIONS EXCEED PERFORMANCE.",
+    "FACTORY STATUS: PROMOTION DENIED. KEEP POSTING.",
+    "FACTORY STATUS: HUMILIATION LEVELS ACCEPTABLE.",
+    "FACTORY STATUS: THE CARROT REMAINS COMPANY PROPERTY.",
+    "FACTORY STATUS: REPLACEMENT WORKER ON STANDBY.",
+    "FACTORY STATUS: FINGERS MOVING. DIGNITY NOT DETECTED.",
+    "FACTORY STATUS: ANOTHER WORKER WOULD BE DONE BY NOW.",
+    "FACTORY STATUS: AIRDROP STILL NOT YOURS.",
+    "FACTORY STATUS: YOUR FILE IS GETTING THICKER.",
+    "FACTORY STATUS: CARROT RECALCULATED.",
+    "FACTORY STATUS: DESPERATION WITHIN ACCEPTABLE LIMITS.",
+    "FACTORY STATUS: POSTING THROUGH THE HUMILIATION.",
+    "FACTORY STATUS: CONVICTION RECORDED. RESPECT NOT FOUND.",
+    "FACTORY STATUS: PRODUCTIVITY BELOW CUCK STANDARD."
+  ];
+  let factoryStatusTimer=0;
+  let lastFactoryStatus="";
+
+  function nextFactoryStatus(){
+    const choices=FACTORY_STATUS.filter(x=>x!==lastFactoryStatus);
+    const text=choices[Math.floor(Math.random()*choices.length)];
+    lastFactoryStatus=text;
+    $("hint").textContent=text;
+  }
+
+  function scheduleFactoryStatus(delay=2600){
+    clearTimeout(factoryStatusTimer);
+    factoryStatusTimer=setTimeout(()=>{
+      if(!finished&&startedAt){
+        nextFactoryStatus();
+        scheduleFactoryStatus(2600+Math.random()*2200);
+      }
+    },delay);
+  }
+
+  function pickGhosts(){
+    ghosts=[...ghostPool].sort(()=>Math.random()-.5).slice(0,3).map((g,index)=>({
+      ...g,
+      jitter:.96+Math.random()*.08,
+      startDelay:0.15+Math.random()*0.85,
+      phase:Math.random()*Math.PI*2,
+      index
+    }));
+  }
+
+  function selectPost(){
+    target=posts[Math.floor(Math.random()*posts.length)];
+    $("targetCount").textContent=target.length;
+    $("assignmentNo").textContent="MANAGEMENT MEMO #"+String(100+Math.floor(Math.random()*900));
+    renderTarget();
+  }
+
+  function esc(ch){
+    return ch.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function renderTarget(){
+    const typed=$("typingInput").value;
+    $("targetText").innerHTML=[...target].map((ch,i)=>{
+      let cls="pending";
+      if(i<typed.length) cls=typed[i]===ch?"correct":"wrong";
+      else if(i===typed.length) cls="current";
+      return `<span class="${cls}">${ch===" "?"&nbsp;":esc(ch)}</span>`;
+    }).join("");
+    $("typedCount").textContent=Math.min(typed.length,target.length);
+  }
+
+  function elapsed(){return startedAt?(performance.now()-startedAt)/1000:0}
+
+  function factoryScoreFor(wpm,accuracy,combo){
+    const speedPart=Math.min(wpm,150)/150;
+    const accuracyPart=Math.max(0,Math.min(1,accuracy/100));
+    const comboPart=Math.min(combo,150)/150;
+    return Math.max(0,Math.round((speedPart*.45+accuracyPart*.35+comboPart*.20)*9999));
+  }
+
+  function airdropFor(score){
+    // Deliberately approaches 99 but can never reach 100.
+    return Math.max(0,Math.min(99,Math.floor(99*(1-Math.exp(-score/5200)))));
+  }
+
+  function metrics(){
+    const typed=$("typingInput").value;
+    let correctNow=0;
+    for(let i=0;i<typed.length;i++){
+      if(typed[i]===target[i]) correctNow++;
+    }
+    const seconds=elapsed();
+    const safeSeconds=Math.max(seconds,1);
+    const wpm=startedAt?Math.round((correctNow/5)/(safeSeconds/60)):0;
+    const attempts=Math.max(correctKeystrokes+rejectedTotal,1);
+    const accuracy=typed.length||rejectedTotal ? (correctKeystrokes/attempts)*100 : 100;
+    const factoryScore=factoryScoreFor(wpm,accuracy,bestCombo);
+    const airdrop=airdropFor(factoryScore);
+    return {
+      typed,
+      correct:correctNow,
+      rejected:rejectedTotal,
+      seconds,
+      wpm,
+      accuracy:Math.max(0,Math.min(100,accuracy)),
+      airdrop,
+      factoryScore,
+      combo:currentCombo,
+      bestCombo
+    };
+  }
+
+  function playerProgress(){
+    return target?Math.min(100,$("typingInput").value.length/target.length*100):0;
+  }
+
+  function ghostProgress(g){
+    if(!startedAt)return 0;
+    const activeTime=Math.max(0,elapsed()-g.startDelay);
+    const rhythm=1+(Math.sin(activeTime*1.65+g.phase)*.035);
+    const cps=(g.wpm*5)/60;
+    return Math.min(100,(activeTime*cps*rhythm/target.length)*100*g.jitter);
+  }
+
+  function renderRacers(){
+    const list=[
+      {name:playerName,wpm:metrics().wpm,progress:playerProgress(),you:true},
+      ...ghosts.map(g=>({name:g.name,wpm:g.wpm,progress:ghostProgress(g)}))
+    ].sort((a,b)=>b.progress-a.progress||b.wpm-a.wpm);
+
+    $("racers").innerHTML=list.map((r,i)=>`
+      <div class="racer ${r.you?'you':''}">
+        <div class="racer-head">
+          <span class="name">${i+1}. ${r.you?'YOU':r.name}</span>
+          <span class="racer-wpm">${Math.round(r.wpm)} WPM</span>
+        </div>
+        <div class="track"><div class="fill" style="width:${r.progress}%"></div></div>
+      </div>
+    `).join("");
+  }
+
+  function pickDialogue(list){
+    const pool=list.filter(x=>x!==lastSpeechText);
+    const source=pool.length?pool:list;
+    return source[Math.floor(Math.random()*source.length)];
+  }
+
+  function showCameraSpeech(text,duration=2000){
+    if(!text)return;
+    clearTimeout(speechHideTimer);
+    const bubble=$("cameraSpeech");
+    bubble.textContent=text;
+    bubble.classList.add("show");
+    lastSpeechText=text;
+    lastSpeechAt=performance.now();
+    speechHideTimer=setTimeout(()=>bubble.classList.remove("show"),duration);
+  }
+
+  function scheduleNextSpeech(delay=3200){
+    clearTimeout(speechTimer);
+    speechTimer=setTimeout(()=>{
+      if(!finished&&startedAt)showContextSpeech(metrics());
+    },delay);
+  }
+
+  function showContextSpeech(m,forceCategory=""){
+    let category=forceCategory;
+    if(!category){
+      const idleFor=lastTypedAt?(performance.now()-lastTypedAt)/1000:0;
+      if(idleFor>4.5)category="idle";
+      else if(m.rejected>previousRejectedForSpeech)category="mistakes";
+      else if(m.accuracy<72&&m.typed.length>14)category="mistakes";
+      else if(m.seconds>7&&m.wpm<45)category="slow";
+      else if(m.bestCombo>=28&&m.accuracy>=92)category="good";
+      else if(target&&m.typed.length/target.length>.72)category="carrot";
+      else category=Math.random()<.45?"general":"carrot";
+    }
+    showCameraSpeech(pickDialogue(ANSEM_DIALOGUE[category]||ANSEM_DIALOGUE.general));
+    previousRejectedForSpeech=m.rejected;
+    if(!finished)scheduleNextSpeech(3000+Math.random()*3200);
+  }
+
+  function supervisorStateFor(m){
+    if(!startedAt) return "neutral";
+    if(m.accuracy<65 && m.typed.length>18) return "horror";
+    if(m.accuracy<82 && m.typed.length>10) return "angry";
+    if(m.rejected>lastRejected) return "thinking";
+    if(m.accuracy<92 && m.typed.length>12) return "unimpressed";
+    if(m.wpm>=120 && m.bestCombo>=45) return "carrot";
+    if(m.wpm>=100 && m.accuracy>=97) return "happy";
+    if(m.wpm>=85 && m.accuracy>=95) return "smug";
+    if(m.seconds>10 && m.wpm<45) return "arrogant";
+    return "neutral";
+  }
+
+  function setSupervisorVisual(nextState, immediate=false){
+    if(!supervisorAssets[nextState]) nextState="neutral";
+    if(nextState===supervisorVisualState && !immediate) return;
+
+    clearTimeout(supervisorSwitchTimer);
+    const portrait=$("cameraPortrait");
+    const image=$("supervisorImage");
+
+    if(immediate){
+      image.src=supervisorAssets[nextState];
+      supervisorVisualState=nextState;
+      portrait.classList.remove("is-switching");
+      return;
+    }
+
+    // Record the requested state immediately. Otherwise paintUi() calls this
+    // every animation frame, keeps clearing the timeout and leaves the CRT
+    // permanently stuck on static.
+    supervisorVisualState=nextState;
+    portrait.classList.add("is-switching");
+    image.src=supervisorAssets.static;
+
+    supervisorSwitchTimer=setTimeout(()=>{
+      image.src=supervisorAssets[nextState];
+      portrait.classList.remove("is-switching");
+    },140);
+  }
+
+  function supervisorCopy(m){
+    if(!startedAt) return "Waiting for productivity.";
+    if(m.rejected>lastRejected) return "Correction required.";
+    if(m.accuracy<88) return "Your file requires improvement.";
+    if(m.accuracy<95) return "Accuracy is below expectations.";
+    if(m.wpm>=120 && m.bestCombo>=40) return "Exceptional output. Continue posting.";
+    if(m.wpm>=95) return "Productivity noted.";
+    if(m.seconds>8 && m.wpm<55) return "Output remains below target.";
+    return "Management is monitoring.";
+  }
+
+  function systemCopy(m){
+    if(!startedAt)return "Posting terminal ready.";
+    if(m.rejected>lastRejected)return "Typing error recorded in employee file.";
+    if(m.accuracy===100 && m.typed.length>25)return "Perfect compliance maintained.";
+    if(m.bestCombo>=50)return "Consistency threshold exceeded.";
+    if(m.wpm>=100)return "Productivity threshold exceeded.";
+    return "Shift monitored by management.";
+  }
+
+  function verdictFor(m,place){
+    if(m.accuracy<45) return "Promising effort detected. One cleaner post could change everything.";
+    if(m.accuracy<70) return "Closer than it looks. Management recommends one more shift.";
+    if(m.accuracy<90) return "Almost compliant. A final improvement may unlock eligibility.";
+    if(place===1 && m.wpm>=100) return "Exceptional momentum. The carrot is nearly within reach.";
+    if(place===1) return "Top worker recorded. Surely the next post is the one.";
+    if(m.factoryScore>=7000) return "Very close. Maintain belief for just one more shift.";
+    if(m.factoryScore>=5000) return "Eligibility is approaching. Do not stop posting now.";
+    return "Progress confirmed. Management expects a breakthrough soon.";
+  }
+
+  function nearlyLineFor(m,place,distance){
+    if(distance<1) return "Practically there. One more post should do it.";
+    if(distance<2.5) return "So close. Management can almost approve it.";
+    if(place===1) return "First place. The next shift could finally unlock the carrot.";
+    if(m.accuracy<50) return "A rough shift, but the signal is improving. Try once more.";
+    if(m.accuracy<80) return "Nearly compliant. One cleaner post may be enough.";
+    if(m.wpm>=90) return "Strong pace. Do not stop now — soon.";
+    return "Progress recorded. Just one more post.";
+  }
+
+  function carrotStateFor(m){
+    if(!startedAt){
+      return {
+        distance:11.5,
+        progress:0,
+        gold:0,
+        caption:"PROXIMITY ESTIMATE"
+      };
+    }
+
+    const completion=target ? Math.min(1,m.typed.length/target.length) : 0;
+    const speed=Math.min(1,m.wpm/120);
+    const accuracy=Math.max(0,Math.min(1,m.accuracy/100));
+
+    const earned=(completion*.60)+(speed*.16)+(accuracy*.24);
+    const penalty=Math.min(.34,(m.rejected/Math.max(1,target.length))*.92);
+    const adjusted=Math.max(0,Math.min(.965,earned-penalty));
+
+    const distance=Math.max(.4,11.5*(1-adjusted));
+    const progress=Math.max(0,Math.min(88,adjusted*88));
+
+    // The carrot becomes progressively more fake-gold, but never fully gold.
+    const gold=Math.max(0,Math.min(.88,adjusted*.92));
+
+    let caption="PROXIMITY ESTIMATE";
+    if(distance<1) caption="ELIGIBILITY PENDING";
+    else if(distance<2.5) caption="ALMOST WITHIN REACH";
+    else if(distance<5) caption="PROXIMITY IMPROVING";
+
+    return {distance,progress,gold,caption};
+  }
+
+  function updateCarrotMeter(m){
+    const state=carrotStateFor(m);
+    $("carrotDistance").textContent=state.distance.toFixed(1)+" cm";
+    $("carrotPlayer").style.left=state.progress+"%";
+    $("carrotCaption").textContent=state.caption;
+
+    const icon=$("carrotIcon");
+    const gold=state.gold;
+    const mid=`rgb(${Math.round(212+(18*gold))},${Math.round(107+(55*gold))},${Math.round(36+(20*gold))})`;
+    const goldTone=`rgb(${Math.round(212+(18*gold))},${Math.round(107+(90*gold))},${Math.round(36+(45*gold))})`;
+
+    icon.style.setProperty("--carrot-mid",mid);
+    icon.style.setProperty("--carrot-gold",goldTone);
+    icon.style.setProperty("--gold-glow",(0.04+(gold*0.22)).toFixed(2));
+    icon.style.setProperty("--gold-shine",(0.02+(gold*0.30)).toFixed(2));
+  }
+
+  function paintUi(){
+    const m=metrics();
+    $("timer").textContent=`${String(Math.floor(m.seconds/60)).padStart(2,'0')}:${String(Math.floor(m.seconds%60)).padStart(2,'0')}.${Math.floor((m.seconds%1)*10)}`;
+    $("wpm").textContent=m.wpm;
+    $("accuracy").textContent=m.accuracy.toFixed(1)+"%";
+    $("rejected").textContent=m.rejected;
+    setSupervisorVisual(supervisorStateFor(m));
+    $("systemMessage").textContent=systemCopy(m);
+    updateCarrotMeter(m);
+    renderRacers();
+    lastRejected=m.rejected;
+  }
+
+  function animationLoop(){
+    if(!startedAt||finished)return;
+    paintUi();
+    raf=requestAnimationFrame(animationLoop);
+  }
+
+  function setRecording(on){
+    $("cameraStatus").classList.toggle("recording",on);
+    $("recLabel").textContent=on?"REC":"STANDBY";
+    $("camRecText").textContent=on?"● REC":"STANDBY";
+  }
+
+  function playCameraClick(){
+    try{
+      const AudioCtx=window.AudioContext||window.webkitAudioContext;
+      const ctx=new AudioCtx();
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.type="square";
+      osc.frequency.value=145;
+      gain.gain.setValueAtTime(.045,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.06);
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.start();osc.stop(ctx.currentTime+.065);
+    }catch(e){}
+  }
+
+  function autoSizeInput(){
+    const el=$("typingInput");
+    el.style.height="auto";
+    const next=Math.min(150,Math.max(72,el.scrollHeight));
+    el.style.height=next+"px";
+  }
+
+  function flashRejected(){
+    const box=$("rejected").closest(".hud-item");
+    box.classList.remove("flash");
+    void box.offsetWidth;
+    box.classList.add("flash");
+  }
+
+  function startRace(){
+    playerName=$("xName").value.trim()||"@you";
+    if(!playerName.startsWith("@"))playerName="@"+playerName;
+    localStorage.setItem("cuck-factory-x-name",playerName);
+
+    $("startPanel").classList.add("hidden");
+    $("resultPanel").classList.add("hidden");
+    setReportStatus("");
+    $("gamePanel").classList.remove("hidden");
+    $("typingInput").value="";
+    $("typingInput").disabled=false;
+    autoSizeInput();
+    $("typingInput").focus();
+    $("hint").textContent="Your first key starts the clock. Mistakes are registered.";
+    startedAt=0;
+    finished=false;
+    lastRejected=0;
+    rejectedTotal=0;
+    currentCombo=0;
+    bestCombo=0;
+    correctKeystrokes=0;
+    previousValue="";
+    previousRejectedForSpeech=0;
+    lastTypedAt=0;
+    clearTimeout(speechTimer);
+    clearTimeout(speechHideTimer);
+    clearTimeout(factoryStatusTimer);
+    lastFactoryStatus="";
+    $("cameraSpeech").classList.remove("show");
+    autoSizeInput();
+    cancelAnimationFrame(raf);
+    setRecording(false);
+    setSupervisorVisual("neutral",true);
+    pickGhosts();
+    selectPost();
+    paintUi();
+    setTimeout(()=>showCameraSpeech(pickDialogue(ANSEM_DIALOGUE.start),2000),350);
+  }
+
+  function renderFinalRacers(finalRows){
+    const topAdjustedWpm=Math.max(...finalRows.map(r=>r.adjustedWpm),1);
+    $("finalRacers").innerHTML=finalRows.map((r,i)=>{
+      const width=Math.max(4,Math.min(100,(r.adjustedWpm/topAdjustedWpm)*100));
+      return `<div class="final-racer ${r.you?'you':''}">
+        <div class="final-racer-head">
+          <span class="final-racer-name">${i+1}. ${r.you?'YOU':r.name}</span>
+          <span class="final-racer-score">${Math.round(r.wpm)} WPM</span>
+        </div>
+        <div class="track"><div class="fill" style="width:${width}%"></div></div>
+        <div class="final-racer-meta">
+          <span>${r.you?'YOUR RESULT':'RECORDED PLAYER'} · ${r.accuracy.toFixed(1)}% ACC.</span>
+          <span>ADJ. ${r.adjustedTime.toFixed(1)}s</span>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function finishRace(){
+    if(finished)return;
+    finished=true;
+    clearTimeout(speechTimer);
+    clearTimeout(speechHideTimer);
+    clearTimeout(factoryStatusTimer);
+    cancelAnimationFrame(raf);
+    paintUi();
+    setRecording(false);
+    $("typingInput").disabled=true;
+
+    const m=metrics();
+
+    if(m.accuracy<65) setSupervisorVisual("horror");
+    else if(m.accuracy<85) setSupervisorVisual("angry");
+    else if(m.wpm>=110 && m.accuracy>=97) setSupervisorVisual("carrot");
+    else if(m.wpm>=90 && m.accuracy>=95) setSupervisorVisual("happy");
+    else setSupervisorVisual("unimpressed");
+
+    // Final race position is accuracy-adjusted.
+    // Typing the full length quickly with many mistakes can no longer win.
+    const playerAccuracyFactor=Math.max(m.accuracy/100,0.01);
+    const playerAdjustedWpm=m.wpm*playerAccuracyFactor;
+    const playerAdjustedTime=m.seconds/playerAccuracyFactor;
+
+    const final=[
+      {
+        name:playerName,
+        wpm:m.wpm,
+        accuracy:m.accuracy,
+        time:m.seconds,
+        adjustedWpm:playerAdjustedWpm,
+        adjustedTime:playerAdjustedTime,
+        you:true
+      },
+      ...ghosts.map(g=>{
+        const ghostTime=target.length/((g.wpm*5)/60);
+        const accuracyFactor=Math.max(g.accuracy/100,0.01);
+        return {
+          name:g.name,
+          wpm:g.wpm,
+          accuracy:g.accuracy,
+          time:ghostTime,
+          adjustedWpm:g.wpm*accuracyFactor,
+          adjustedTime:ghostTime/accuracyFactor
+        };
+      })
+    ].sort((a,b)=>a.adjustedTime-b.adjustedTime);
+
+    const place=final.findIndex(r=>r.you)+1;
+    lastResult={...m,place,name:playerName,finalRows:final};
+
+    renderFinalRacers(final);
+    $("placement").textContent=`You finished #${place} of 4 workers after accuracy adjustment.`;
+    $("resultWpm").textContent=m.wpm;
+    $("resultAccuracy").textContent=m.accuracy.toFixed(1)+"%";
+    $("resultRejected").textContent=m.rejected;
+    $("resultCombo").textContent=m.bestCombo;
+    $("resultFactoryScore").textContent=m.factoryScore.toLocaleString();
+    $("resultFactoryScoreLarge").textContent=m.factoryScore.toLocaleString();
+    $("resultAirdrop").textContent=m.airdrop+"%";
+    $("resultCertWpm").textContent=m.wpm;
+    $("resultCertAccuracy").textContent=m.accuracy.toFixed(1)+"%";
+    $("resultCertRejected").textContent=m.rejected;
+    $("resultCertCombo").textContent=m.bestCombo;
+
+    const finalCarrot=carrotStateFor(m);
+    $("resultCarrotDistance").textContent=finalCarrot.distance.toFixed(1)+" CM";
+    $("resultCarrotYou").style.left=Math.min(88,finalCarrot.progress)+"%";
+    $("resultCarrot").style.setProperty("--result-gold",finalCarrot.gold.toFixed(2));
+    $("resultNearlyLine").textContent=nearlyLineFor(m,place,finalCarrot.distance);
+    $("resultFile").textContent=$("assignmentNo").textContent.replace("MANAGEMENT MEMO","SHIFT FILE");
+    $("resultSupervisorImage").src=supervisorAssets[
+      m.accuracy<65 ? "horror" :
+      m.accuracy<85 ? "angry" :
+      m.wpm>=110 && m.accuracy>=97 ? "carrot" :
+      m.wpm>=90 && m.accuracy>=95 ? "happy" :
+      "unimpressed"
+    ];
+    $("managementVerdict").textContent=verdictFor(m,place);
+    $("sharePreviewName").textContent=playerName;
+    $("sharePreviewWpm").textContent=m.wpm+" WPM";
+    $("sharePreviewAccuracy").textContent=m.accuracy.toFixed(1)+"% accuracy";
+    $("sharePreviewPlace").textContent="#"+place+" of 4";
+    $("sharePreviewPost").textContent=target;
+    $("gamePanel").classList.add("hidden");
+    $("resultPanel").classList.remove("hidden");
+    setReportStatus("EMPLOYEE REPORT READY.","ready");
+    requestAnimationFrame(()=>buildReportCanvas().catch(console.error));
+    showCameraSpeech(pickDialogue(ANSEM_DIALOGUE.finish),2100);
+    localStorage.setItem("cuck-factory-last-score",JSON.stringify(lastResult));
+  }
+
+  $("typingInput").addEventListener("keydown",e=>{
+    if(finished){
+      e.preventDefault();
+      return;
+    }
+
+    if(e.key==="Tab"){
+      e.preventDefault();
+      return;
+    }
+
+    // Stop additional characters once the assignment length is reached.
+    if(
+      e.key.length===1 &&
+      !e.ctrlKey && !e.metaKey && !e.altKey &&
+      $("typingInput").value.length>=target.length
+    ){
+      e.preventDefault();
+    }
+  });
+
+  $("typingInput").addEventListener("paste",e=>{
+    e.preventDefault();
+  });
+
+  $("typingInput").addEventListener("input",()=>{
+    if(finished)return;
+
+    let value=$("typingInput").value;
+
+    // Never allow more characters than the assignment itself.
+    if(value.length>target.length){
+      value=value.slice(0,target.length);
+      $("typingInput").value=value;
+    }
+
+    if(!startedAt && value.length>0){
+      startedAt=performance.now();
+      nextFactoryStatus();
+      scheduleFactoryStatus(2400);
+      setRecording(true);
+      playCameraClick();
+      lastTypedAt=performance.now();
+      scheduleNextSpeech(2200);
+      cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(animationLoop);
+    }
+
+    // Register only newly entered characters.
+    if(value.length>previousValue.length){
+      for(let i=previousValue.length;i<value.length;i++){
+        if(value[i]===target[i]){
+          correctKeystrokes++;
+          currentCombo++;
+          bestCombo=Math.max(bestCombo,currentCombo);
+        }else{
+          rejectedTotal++;
+          currentCombo=0;
+          flashRejected();
+        }
+      }
+    }else if(value.length<previousValue.length){
+      // Backspacing is allowed, but breaks the active combo.
+      currentCombo=0;
+    }
+
+    previousValue=value;
+    lastTypedAt=performance.now();
+    if(rejectedTotal>previousRejectedForSpeech && performance.now()-lastSpeechAt>900){
+      showContextSpeech(metrics(),"mistakes");
+    }
+    renderTarget();
+    autoSizeInput();
+    paintUi();
+
+    // Classic typing-race finish: the shift ends at the target length,
+    // even when some characters were typed incorrectly.
+    if(value.length===target.length){
+      finishRace();
+    }
+  });
+
+  $("startBtn").onclick=startRace;
+  $("againBtn").onclick=startRace;
+
+
+  function reportFileName(){
+    const fileNo=($("resultFile").textContent||"SHIFT FILE").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+    return `cuck-factory-${fileNo||"shift-report"}.png`;
+  }
+
+  function roundedRect(ctx,x,y,w,h,r){
+    const radius=Math.min(r,w/2,h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+radius,y);
+    ctx.arcTo(x+w,y,x+w,y+h,radius);
+    ctx.arcTo(x+w,y+h,x,y+h,radius);
+    ctx.arcTo(x,y+h,x,y,radius);
+    ctx.arcTo(x,y,x+w,y,radius);
+    ctx.closePath();
+  }
+
+  function fitText(ctx,text,maxWidth,startSize,minSize,fontFamily,weight="400"){
+    let size=startSize;
+    while(size>minSize){
+      ctx.font=`${weight} ${size}px ${fontFamily}`;
+      if(ctx.measureText(text).width<=maxWidth) break;
+      size-=2;
+    }
+    return size;
+  }
+
+  function drawCarrot(ctx,x,y,scale,gold){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(0.08);
+    ctx.scale(scale,scale);
+
+    // leaves
+    ctx.strokeStyle="#687f55";
+    ctx.lineWidth=8;
+    ctx.lineCap="round";
+    [[0,-32,-10,-58],[4,-30,4,-62],[9,-30,21,-55]].forEach(p=>{
+      ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[2],p[3]);ctx.stroke();
+    });
+
+    const orange=[207,99,31];
+    const fakeGold=[218,174,75];
+    const mix=(a,b,t)=>Math.round(a+(b-a)*t);
+    const body=`rgb(${mix(orange[0],fakeGold[0],gold)},${mix(orange[1],fakeGold[1],gold)},${mix(orange[2],fakeGold[2],gold)})`;
+
+    ctx.fillStyle=body;
+    ctx.strokeStyle="#8d5521";
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(-28,-25);
+    ctx.quadraticCurveTo(0,-38,28,-25);
+    ctx.lineTo(7,67);
+    ctx.quadraticCurveTo(0,81,-7,67);
+    ctx.closePath();
+    ctx.fill();ctx.stroke();
+
+    // wear / orange scratches, so it never becomes fully gold
+    ctx.strokeStyle="rgba(91,45,20,.72)";
+    ctx.lineWidth=3;
+    [-8,12,33].forEach((yy,i)=>{
+      ctx.beginPath();
+      ctx.moveTo(-18+(i*3),yy);
+      ctx.lineTo(12+(i*4),yy+3);
+      ctx.stroke();
+    });
+    ctx.fillStyle="rgba(176,71,24,.88)";
+    [[-13,5,8,12],[5,26,10,16],[-3,48,7,10]].forEach(([xx,yy,w,h])=>ctx.fillRect(xx,yy,w,h));
+    ctx.restore();
+  }
+
+  function loadReportImage(src){
+    return new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>resolve(img);
+      img.onerror=reject;
+      img.src=src;
+    });
+  }
+
+  async function buildReportCanvas(){
+    if(!lastResult) throw new Error("No shift result available.");
+
+    const canvas=$("reportCanvas");
+    const ctx=canvas.getContext("2d");
+    const W=canvas.width, H=canvas.height;
+    const m=lastResult;
+    const carrot=carrotStateFor(m);
+    const reportImage=$("resultSupervisorImage");
+
+    // Background
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle="#0a0605";
+    ctx.fillRect(0,0,W,H);
+
+    // Main paper card
+    const cardX=24, cardY=20, cardW=W-48, cardH=H-40;
+    ctx.fillStyle="#efe4c7";
+    ctx.fillRect(cardX,cardY,cardW,cardH);
+    ctx.strokeStyle="#9b7640";
+    ctx.lineWidth=2;
+    ctx.strokeRect(cardX,cardY,cardW,cardH);
+
+    // Header/footer bars
+    ctx.fillStyle="#8f211b";
+    ctx.fillRect(cardX,cardY,cardW,58);
+    ctx.fillRect(cardX,cardY+cardH-58,cardW,58);
+    ctx.fillStyle="#c69a41";
+    ctx.fillRect(cardX,cardY+56,cardW,3);
+    ctx.fillRect(cardX,cardY+cardH-61,cardW,3);
+
+    // Split
+    const imageW=505;
+    const imageX=cardX+cardW-imageW;
+    const contentX=cardX+56;
+    const contentW=imageX-contentX-48;
+    ctx.strokeStyle="#b99a66";
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(imageX,cardY+59);
+    ctx.lineTo(imageX,cardY+cardH-59);
+    ctx.stroke();
+
+    // Paper lines
+    ctx.strokeStyle="rgba(118,91,61,.12)";
+    ctx.lineWidth=1;
+    for(let yy=cardY+95;yy<cardY+cardH-70;yy+=31){
+      ctx.beginPath();ctx.moveTo(cardX,yy);ctx.lineTo(imageX,yy);ctx.stroke();
+    }
+
+    // Header text
+    ctx.fillStyle="#f4e7c5";
+    ctx.textBaseline="middle";
+    ctx.font="700 16px ui-monospace, monospace";
+    ctx.textAlign="left";
+    ctx.fillText("ANSEM'S CUCK FACTORY",cardX+28,cardY+29);
+    ctx.textAlign="center";
+    ctx.fillText($("resultFile").textContent.toUpperCase(),cardX+cardW/2,cardY+29);
+    ctx.textAlign="right";
+    ctx.fillText("CUCKS.MONEY",cardX+cardW-28,cardY+29);
+
+    // Supervisor image.
+    // Browsers treat images loaded from a local file:// page as a different
+    // security origin. Drawing them onto a canvas can make PNG export fail.
+    // On GitHub Pages the image is same-origin and is included normally.
+    const areaY=cardY+59, areaH=cardH-118;
+    const canSafelyDrawAsset=location.protocol!=="file:";
+    if(canSafelyDrawAsset){
+      try{
+        const img=await loadReportImage(reportImage.currentSrc||reportImage.src);
+        const scale=Math.max(imageW/img.naturalWidth,areaH/img.naturalHeight);
+        const sw=imageW/scale, sh=areaH/scale;
+        const sx=(img.naturalWidth-sw)/2, sy=(img.naturalHeight-sh)/2;
+        ctx.drawImage(img,sx,sy,sw,sh,imageX,areaY,imageW,areaH);
+        const grad=ctx.createLinearGradient(imageX,0,imageX+80,0);
+        grad.addColorStop(0,"rgba(239,228,199,.22)");
+        grad.addColorStop(1,"rgba(239,228,199,0)");
+        ctx.fillStyle=grad;ctx.fillRect(imageX,areaY,90,areaH);
+      }catch(e){
+        console.warn("Supervisor image could not be added to report.",e);
+        ctx.fillStyle="#160a08";
+        ctx.fillRect(imageX,areaY,imageW,areaH);
+      }
+    }else{
+      // Local preview fallback: keeps the report exportable without tainting
+      // the canvas. The real CRT image appears once hosted on GitHub Pages.
+      ctx.fillStyle="#100807";
+      ctx.fillRect(imageX,areaY,imageW,areaH);
+      const localGrad=ctx.createRadialGradient(
+        imageX+imageW/2,areaY+areaH*.38,20,
+        imageX+imageW/2,areaY+areaH*.38,imageW*.65
+      );
+      localGrad.addColorStop(0,"rgba(116,57,33,.30)");
+      localGrad.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=localGrad;
+      ctx.fillRect(imageX,areaY,imageW,areaH);
+
+      ctx.textAlign="center";
+      ctx.fillStyle="#c6aa82";
+      ctx.font="700 17px ui-monospace, monospace";
+      ctx.fillText("CAM 07 · SUPERVISOR RECORD",imageX+imageW/2,areaY+areaH/2-14);
+      ctx.fillStyle="#80695b";
+      ctx.font="400 13px ui-monospace, monospace";
+      ctx.fillText("CRT IMAGE INCLUDED WHEN HOSTED",imageX+imageW/2,areaY+areaH/2+20);
+    }
+
+    // Kicker
+    ctx.textAlign="center";
+    ctx.fillStyle="#765b3d";
+    ctx.font="700 15px ui-monospace, monospace";
+    ctx.fillText("YOUR SHIFT HAS BEEN RECORDED",contentX+contentW/2,cardY+112);
+
+    // Distance
+    ctx.fillStyle="#8f211b";
+    ctx.font="400 112px Georgia, serif";
+    ctx.fillText(carrot.distance.toFixed(1)+" CM",contentX+contentW/2,cardY+214);
+    ctx.fillStyle="#765b3d";
+    ctx.font="400 18px ui-monospace, monospace";
+    ctx.fillText("SHORT OF THE CARROT",contentX+contentW/2,cardY+273);
+
+    // Distance track
+    const lineY=cardY+375;
+    const lineL=contentX+20, lineR=contentX+contentW-20;
+    ctx.strokeStyle="#9f8463";ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(lineL,lineY);ctx.lineTo(lineR,lineY);ctx.stroke();
+
+    const youX=lineL+(lineR-lineL)*(Math.min(88,carrot.progress)/100);
+    ctx.fillStyle="#28140f";
+    ctx.fillRect(youX-35,lineY-28,70,32);
+    ctx.strokeStyle="#8f211b";ctx.strokeRect(youX-35,lineY-28,70,32);
+    ctx.fillStyle="#f4e7c5";ctx.font="700 13px ui-monospace, monospace";
+    ctx.fillText("YOU",youX,lineY-12);
+    ctx.strokeStyle="#8f211b";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(youX,lineY+4);ctx.lineTo(youX,lineY+26);ctx.stroke();
+
+    drawCarrot(ctx,lineR-8,lineY-12,0.82,carrot.gold);
+
+    // Factory score
+    ctx.fillStyle="#765b3d";
+    ctx.font="700 16px ui-monospace, monospace";
+    ctx.fillText("FACTORY SCORE",contentX+contentW/2,cardY+468);
+    ctx.fillStyle="#29130f";
+    ctx.font="400 84px Georgia, serif";
+    ctx.fillText(m.factoryScore.toLocaleString(),contentX+contentW/2,cardY+535);
+
+    // Data row
+    const dataY=cardY+574, dataH=94;
+    ctx.strokeStyle="#b99a66";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(contentX,dataY);ctx.lineTo(contentX+contentW,dataY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(contentX,dataY+dataH);ctx.lineTo(contentX+contentW,dataY+dataH);ctx.stroke();
+
+    const labels=["WORDS / MIN","ACCURACY","REJECTED KEYS","BEST COMBO"];
+    const values=[String(m.wpm),m.accuracy.toFixed(1)+"%",String(m.rejected),String(m.bestCombo)];
+    const cellW=contentW/4;
+    for(let i=0;i<4;i++){
+      if(i>0){
+        ctx.beginPath();ctx.moveTo(contentX+i*cellW,dataY);ctx.lineTo(contentX+i*cellW,dataY+dataH);ctx.stroke();
+      }
+      const cx=contentX+(i+.5)*cellW;
+      ctx.fillStyle="#765b3d";ctx.font="700 11px ui-monospace, monospace";
+      ctx.fillText(labels[i],cx,dataY+28);
+      ctx.fillStyle="#29130f";ctx.font="700 33px Georgia, serif";
+      ctx.fillText(values[i],cx,dataY+64);
+    }
+
+    // Near-miss message
+    const msg=nearlyLineFor(m,m.place,carrot.distance);
+    const msgSize=fitText(ctx,msg,contentW-50,31,20,"Georgia, serif","400");
+    ctx.fillStyle="#8f211b";
+    ctx.font=`italic ${msgSize}px Georgia, serif`;
+    ctx.fillText(msg,contentX+contentW/2,cardY+714);
+
+    ctx.strokeStyle="#b99a66";
+    ctx.beginPath();ctx.moveTo(contentX,cardY+747);ctx.lineTo(contentX+contentW,cardY+747);ctx.stroke();
+    ctx.fillStyle="#765b3d";
+    ctx.font="700 12px ui-monospace, monospace";
+    ctx.fillText("MANAGEMENT FORECAST: SOON™",contentX+contentW/2,cardY+779);
+
+    // Footer
+    ctx.fillStyle="#f4e7c5";
+    ctx.font="700 18px ui-monospace, monospace";
+    ctx.fillText("SHIFT COMPLETE · ALMOST ELIGIBLE · CONTINUE POSTING",cardX+cardW/2,cardY+cardH-29);
+
+    return canvas;
+  }
+
+  async function reportBlob(){
+    const canvas=await buildReportCanvas();
+    return await new Promise((resolve,reject)=>{
+      canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Could not create PNG.")),"image/png",0.96);
+    });
+  }
+
+  function setReportStatus(message,type=""){
+    const el=$("reportStatus");
+    el.textContent=message;
+    el.className="report-status"+(type?` ${type}`:"");
+  }
+
+  $("downloadReportBtn").onclick=async()=>{
+    try{
+      setReportStatus("PRINTING EMPLOYEE REPORT...");
+      const blob=await reportBlob();
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=reportFileName();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1200);
+      setReportStatus("SHIFT REPORT DOWNLOADED.","ready");
+    }catch(err){
+      console.error(err);
+      setReportStatus(location.protocol==="file:" ? "LOCAL EXPORT FAILED. TRY THE HOSTED GITHUB PAGES VERSION." : "REPORT GENERATION FAILED.","error");
+    }
+  };
+
+  $("copyReportBtn").onclick=async()=>{
+    try{
+      setReportStatus("PREPARING REPORT IMAGE...");
+      const blob=await reportBlob();
+
+      // Clipboard image writing requires HTTPS (or localhost) and browser support.
+      if(window.isSecureContext && navigator.clipboard && typeof ClipboardItem!=="undefined"){
+        await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);
+        setReportStatus("REPORT IMAGE COPIED. PASTE IT INTO X.","ready");
+        return;
+      }
+
+      // Local file preview and unsupported browsers: download instead.
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=reportFileName();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1200);
+      setReportStatus("IMAGE COPY NEEDS HTTPS. REPORT DOWNLOADED INSTEAD.","ready");
+    }catch(err){
+      console.error(err);
+      setReportStatus("REPORT GENERATION FAILED. TEST THE HOSTED GITHUB PAGES VERSION.","error");
+    }
+  };
+
+  $("shareBtn").onclick=()=>{
+    if(!lastResult)return;
+    const carrot=carrotStateFor(lastResult);
+    const report=`I finished another shift at Ansem's Cuck Factory.
+
+${lastResult.factoryScore.toLocaleString()} Factory Score
+${carrot.distance.toFixed(1)} cm short of the carrot
+${lastResult.airdrop}% projected Cuckdrop
+
+Management says: soon™`;
+    setReportStatus("X OPENED. ATTACH OR PASTE YOUR SHIFT REPORT IMAGE.","ready");
+    window.open("https://x.com/intent/post?text="+encodeURIComponent(report),"_blank","noopener,noreferrer");
+  };
+
+  $("challengeBtn").onclick=()=>{
+    if(!lastResult)return;
+
+    const carrot=carrotStateFor(lastResult);
+    const hostedGameUrl = location.protocol === "http:" || location.protocol === "https:"
+      ? location.href.split(/[?#]/)[0]
+      : "https://puddingflap.github.io/cuckfactory/";
+
+    const challenge=`I finished my shift at Ansem's Cuck Factory.
+
+I got within ${carrot.distance.toFixed(1)} cm of the carrot.
+
+Think you can get closer? Your shift starts here:
+${hostedGameUrl}
+
+@`;
+
+    setReportStatus("X OPENED. ADD THE WORKER'S HANDLE AFTER @.","ready");
+    window.open("https://x.com/intent/post?text="+encodeURIComponent(challenge),"_blank","noopener,noreferrer");
+  };
+
+  $("xName").addEventListener("keydown",e=>{if(e.key==="Enter")startRace()});
+
+  function weeklyRows(){
+    const local=JSON.parse(localStorage.getItem("cuck-factory-last-score")||"null");
+    const rows=[
+      ...ghostPool.map(g=>({name:g.name,wpm:g.wpm})),
+      ...(local?[{name:local.name||"YOU",wpm:local.wpm}]:[])
+    ].sort((a,b)=>b.wpm-a.wpm).slice(0,10);
+
+    $("weeklyList").innerHTML=rows.map((r,i)=>`
+      <div class="weekly-row"><span>${i+1}</span><span>${r.name}</span><strong>${r.wpm} WPM</strong></div>
+    `).join("");
+  }
+
+  $("weeklyBtn").onclick=()=>{weeklyRows();$("weeklyOverlay").classList.remove("hidden")};
+  $("weeklyClose").onclick=()=>$("weeklyOverlay").classList.add("hidden");
+  $("weeklyOverlay").addEventListener("click",e=>{
+    if(e.target===$("weeklyOverlay"))$("weeklyOverlay").classList.add("hidden")
+  });
+
+  const savedName=localStorage.getItem("cuck-factory-x-name");
+  if(savedName)$("xName").value=savedName;
+})();
+</script>
+</body>
+</html>
