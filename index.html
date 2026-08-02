@@ -1138,7 +1138,7 @@ textarea:focus{border-color:var(--amber)}
         <button class="close" id="weeklyClose">×</button>
       </div>
       <div id="weeklyList" class="weekly-list"></div>
-      <p class="modal-note">Top 10 scores will be loaded from the shared leaderboard in a later build.</p>
+      <p class="modal-note" id="weeklyNote">LIVE SHARED FACTORY RECORDS · RANKED BY FACTORY SCORE</p>
     </div>
   </div>
 </div>
@@ -1187,6 +1187,7 @@ textarea:focus{border-color:var(--amber)}
   let bestCombo = 0;
   let correctKeystrokes = 0;
   let previousValue = "";
+  let scoreSubmissionPromise = null;
 
   const supervisorAssets = {
     neutral:"assets/neutral.webp",
@@ -1646,6 +1647,56 @@ textarea:focus{border-color:var(--amber)}
     }).join("");
   }
 
+  function createShiftId(){
+    if(window.crypto&&typeof window.crypto.randomUUID==="function"){
+      return window.crypto.randomUUID();
+    }
+    return `shift-${Date.now()}-${Math.random().toString(36).slice(2,12)}`;
+  }
+
+  async function submitCompletedShift(result,carrot){
+    if(!result||result.scoreSubmitted)return;
+    result.scoreSubmitted=true;
+    $("resultFile").textContent="SHIFT FILE · RECORDING...";
+    setReportStatus("SAVING EMPLOYEE RECORD TO THE FACTORY...","");
+
+    try{
+      const response=await fetch("/api/submit-score",{
+        method:"POST",
+        headers:{"content-type":"application/json"},
+        body:JSON.stringify({
+          playerHandle:result.name,
+          wpm:result.wpm,
+          accuracy:Number(result.accuracy.toFixed(2)),
+          rejected:result.rejected,
+          bestCombo:result.bestCombo,
+          factoryScore:result.factoryScore,
+          carrotDistance:Number(carrot.distance.toFixed(2)),
+          shiftId:result.shiftId
+        })
+      });
+
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok){
+        throw new Error(data.message||`Factory API returned ${response.status}.`);
+      }
+
+      result.factoryFileNumber=data.factoryFileNumber;
+      result.factoryFile=data.factoryFile;
+      result.savedOnline=true;
+      $("resultFile").textContent=`SHIFT FILE · ${data.factoryFile}`;
+      setReportStatus(`${data.factoryFile} RECORDED · SHARED LEADERBOARD UPDATED.`,"ready");
+      localStorage.setItem("cuck-factory-last-score",JSON.stringify(result));
+      await buildReportCanvas();
+    }catch(error){
+      console.error("Score submission failed:",error);
+      result.savedOnline=false;
+      $("resultFile").textContent=$("assignmentNo").textContent.replace("MANAGEMENT MEMO","SHIFT FILE");
+      setReportStatus("SHIFT SAVED LOCALLY · SHARED LEADERBOARD TEMPORARILY UNAVAILABLE.","error");
+      localStorage.setItem("cuck-factory-last-score",JSON.stringify(result));
+    }
+  }
+
   function finishRace(){
     if(finished)return;
     finished=true;
@@ -1696,7 +1747,15 @@ textarea:focus{border-color:var(--amber)}
     ].sort((a,b)=>a.adjustedTime-b.adjustedTime);
 
     const place=final.findIndex(r=>r.you)+1;
-    lastResult={...m,place,name:playerName,finalRows:final};
+    lastResult={
+      ...m,
+      place,
+      name:playerName,
+      finalRows:final,
+      shiftId:createShiftId(),
+      scoreSubmitted:false,
+      savedOnline:false
+    };
 
     renderFinalRacers(final);
     $("placement").textContent=`You finished #${place} of 4 workers after accuracy adjustment.`;
@@ -1737,6 +1796,7 @@ textarea:focus{border-color:var(--amber)}
     requestAnimationFrame(()=>buildReportCanvas().catch(console.error));
     showCameraSpeech(pickDialogue(ANSEM_DIALOGUE.finish),2100);
     localStorage.setItem("cuck-factory-last-score",JSON.stringify(lastResult));
+    scoreSubmissionPromise=submitCompletedShift(lastResult,finalCarrot);
   }
 
   $("typingInput").addEventListener("keydown",e=>{
@@ -2187,19 +2247,44 @@ ${hostedGameUrl}
 
   $("xName").addEventListener("keydown",e=>{if(e.key==="Enter")startRace()});
 
-  function weeklyRows(){
-    const local=JSON.parse(localStorage.getItem("cuck-factory-last-score")||"null");
-    const rows=[
-      ...ghostPool.map(g=>({name:g.name,wpm:g.wpm})),
-      ...(local?[{name:local.name||"YOU",wpm:local.wpm}]:[])
-    ].sort((a,b)=>b.wpm-a.wpm).slice(0,10);
+  async function weeklyRows(){
+    $("weeklyList").innerHTML=`<div class="weekly-row"><span>·</span><span>LOADING SHARED FACTORY RECORDS</span><strong>...</strong></div>`;
+    $("weeklyNote").textContent="CONTACTING FACTORY DATABASE...";
 
-    $("weeklyList").innerHTML=rows.map((r,i)=>`
-      <div class="weekly-row"><span>${i+1}</span><span>${r.name}</span><strong>${r.wpm} WPM</strong></div>
-    `).join("");
+    try{
+      const response=await fetch("/api/leaderboard?period=week",{headers:{"accept":"application/json"}});
+      const data=await response.json();
+      if(!response.ok||data.status!=="ok")throw new Error(data.message||"Leaderboard unavailable.");
+
+      const rows=Array.isArray(data.leaderboard)?data.leaderboard:[];
+      if(!rows.length){
+        $("weeklyList").innerHTML=`<div class="weekly-row"><span>·</span><span>NO SHIFTS RECORDED YET</span><strong>BE FIRST</strong></div>`;
+        $("weeklyNote").textContent="THE FACTORY IS WAITING FOR ITS FIRST RECORDED WORKER.";
+        return;
+      }
+
+      $("weeklyList").innerHTML=rows.map(r=>`
+        <div class="weekly-row">
+          <span>${r.rank}</span>
+          <span>@${esc(String(r.playerHandle||"worker").replace(/^@+/,""))}<br><small>${esc(r.factoryFile||"")} · ${Number(r.carrotDistance).toFixed(1)} CM SHORT</small></span>
+          <strong>${Number(r.factoryScore).toLocaleString()} PTS</strong>
+        </div>
+      `).join("");
+      $("weeklyNote").textContent="LIVE SHARED FACTORY RECORDS · RANKED BY FACTORY SCORE";
+    }catch(error){
+      console.error("Leaderboard load failed:",error);
+      const local=JSON.parse(localStorage.getItem("cuck-factory-last-score")||"null");
+      $("weeklyList").innerHTML=local?`
+        <div class="weekly-row"><span>·</span><span>${esc(local.name||"YOU")}<br><small>LOCAL RECORD ONLY</small></span><strong>${Number(local.factoryScore||0).toLocaleString()} PTS</strong></div>
+      `:`<div class="weekly-row"><span>!</span><span>FACTORY DATABASE UNAVAILABLE</span><strong>RETRY</strong></div>`;
+      $("weeklyNote").textContent="SHARED RECORDS COULD NOT BE LOADED. YOUR GAME STILL WORKS.";
+    }
   }
 
-  $("weeklyBtn").onclick=()=>{weeklyRows();$("weeklyOverlay").classList.remove("hidden")};
+  $("weeklyBtn").onclick=()=>{
+    $("weeklyOverlay").classList.remove("hidden");
+    weeklyRows();
+  };
   $("weeklyClose").onclick=()=>$("weeklyOverlay").classList.add("hidden");
   $("weeklyOverlay").addEventListener("click",e=>{
     if(e.target===$("weeklyOverlay"))$("weeklyOverlay").classList.add("hidden")
