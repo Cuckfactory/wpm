@@ -918,6 +918,35 @@ textarea:focus{border-color:var(--amber)}
   .result-actions button{width:100%}
 }
 
+
+.switch-cuck-link{
+  border:1px solid var(--line);
+  background:rgba(24,16,13,.72);
+  color:var(--muted);
+  padding:8px 11px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+}
+.switch-cuck-link:hover{color:var(--text);border-color:#76503c}
+.modal-copy{color:#cdbba2;line-height:1.55;margin:18px 0 0}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:20px}
+.modal-actions button{min-width:180px}
+.replacement-stamp{
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  padding:16px;
+  background:#0a0504;
+  color:var(--amber-soft);
+  letter-spacing:.12em;
+  line-height:1.7;
+}
+@media(max-width:760px){
+  .switch-cuck-link{width:100%}
+  .modal-actions button{width:100%}
+}
+
 </style>
 </head>
 <body>
@@ -929,6 +958,7 @@ textarea:focus{border-color:var(--amber)}
     </div>
     <div class="header-actions">
       <button class="leader-link" id="weeklyBtn">CUCK OF THE WEEK</button>
+      <button class="switch-cuck-link hidden" id="switchCuckBtn">SWITCH CUCK</button>
       <div class="status"><small>AIRDROP STATUS</small><strong>PENDING</strong></div>
     </div>
     <div class="camera-status" id="cameraStatus">
@@ -1122,6 +1152,7 @@ textarea:focus{border-color:var(--amber)}
           <button class="secondary" id="shareBtn">POST ON X</button>
           <button class="secondary" id="challengeBtn">CHALLENGE A CUCK</button>
           <button class="secondary" id="againBtn">WORK ANOTHER SHIFT</button>
+          <button class="secondary" id="changeCuckBtn">CHANGE CUCK</button>
         </div>
         <div class="report-status" id="reportStatus" aria-live="polite"></div>
         <canvas id="reportCanvas" width="1600" height="900" class="hidden" aria-hidden="true"></canvas>
@@ -1139,6 +1170,32 @@ textarea:focus{border-color:var(--amber)}
       </div>
       <div id="weeklyList" class="weekly-list"></div>
       <p class="modal-note" id="weeklyNote">LIVE SHARED FACTORY RECORDS · RANKED BY FACTORY SCORE</p>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="abandonOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div><small>FACTORY WARNING</small><h2>ABANDON SHIFT?</h2></div>
+        <button class="close" id="abandonClose">×</button>
+      </div>
+      <p class="modal-copy">Your current progress will be lost. Management will record the disappearance as voluntary.</p>
+      <div class="modal-actions">
+        <button class="secondary" id="continueShiftBtn">CONTINUE SHIFT</button>
+        <button class="primary" id="confirmChangeCuckBtn">CHANGE CUCK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="replacedOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div><small>PERSONNEL UPDATE</small><h2>CUCK REPLACED</h2></div>
+      </div>
+      <div class="replacement-stamp">CURRENT CUCK REMOVED FROM ACTIVE DUTY.<br>NEXT CUCK REPORT TO TERMINAL.</div>
+      <div class="modal-actions">
+        <button class="primary" id="nextCuckBtn">NEXT CUCK</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1561,6 +1618,41 @@ textarea:focus{border-color:var(--amber)}
     $("camRecText").textContent=on?"● REC":"STANDBY";
   }
 
+  function returnToCuckSelection(){
+    clearTimeout(speechTimer);
+    clearTimeout(speechHideTimer);
+    clearTimeout(factoryStatusTimer);
+    clearTimeout(supervisorSwitchTimer);
+    cancelAnimationFrame(raf);
+
+    startedAt=0;
+    finished=false;
+    lastResult=null;
+    scoreSubmissionPromise=null;
+    $("typingInput").value="";
+    $("typingInput").disabled=false;
+    $("gamePanel").classList.add("hidden");
+    $("resultPanel").classList.add("hidden");
+    $("startPanel").classList.remove("hidden");
+    $("switchCuckBtn").classList.add("hidden");
+    $("abandonOverlay").classList.add("hidden");
+    $("replacedOverlay").classList.add("hidden");
+    $("cameraSpeech").classList.remove("show");
+    setRecording(false);
+    setSupervisorVisual("neutral",true);
+    setReportStatus("");
+
+    localStorage.removeItem("cuck-factory-x-name");
+    $("xName").value="";
+    $("xName").focus();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function showCuckReplaced(){
+    $("abandonOverlay").classList.add("hidden");
+    $("replacedOverlay").classList.remove("hidden");
+  }
+
   function playCameraClick(){
     try{
       const AudioCtx=window.AudioContext||window.webkitAudioContext;
@@ -1597,6 +1689,7 @@ textarea:focus{border-color:var(--amber)}
 
     $("startPanel").classList.add("hidden");
     $("resultPanel").classList.add("hidden");
+    $("switchCuckBtn").classList.remove("hidden");
     setReportStatus("");
     $("gamePanel").classList.remove("hidden");
     $("typingInput").value="";
@@ -1706,6 +1799,7 @@ textarea:focus{border-color:var(--amber)}
     cancelAnimationFrame(raf);
     paintUi();
     setRecording(false);
+    $("switchCuckBtn").classList.add("hidden");
     $("typingInput").disabled=true;
 
     const m=metrics();
@@ -1883,6 +1977,18 @@ textarea:focus{border-color:var(--amber)}
 
   $("startBtn").onclick=startRace;
   $("againBtn").onclick=startRace;
+
+  $("changeCuckBtn").onclick=showCuckReplaced;
+  $("switchCuckBtn").onclick=()=>{
+    $("abandonOverlay").classList.remove("hidden");
+  };
+  $("continueShiftBtn").onclick=()=>$("abandonOverlay").classList.add("hidden");
+  $("abandonClose").onclick=()=>$("abandonOverlay").classList.add("hidden");
+  $("confirmChangeCuckBtn").onclick=showCuckReplaced;
+  $("nextCuckBtn").onclick=returnToCuckSelection;
+  $("abandonOverlay").addEventListener("click",e=>{
+    if(e.target===$("abandonOverlay"))$("abandonOverlay").classList.add("hidden");
+  });
 
 
   function reportFileName(){
