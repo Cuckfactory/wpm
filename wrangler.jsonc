@@ -1,5 +1,6 @@
 {
   "name": "wpm",
+  "main": "src/worker.js",
   "compatibility_date": "2026-08-02",
 
   "assets": {
