@@ -2359,33 +2359,19 @@ body.modal-open{overflow:hidden}
     $("typingInput").disabled=false;
     autoSizeInput();
 
-    const alignMobileHud=()=>{
-      const hud=document.querySelector(".hud");
-      if(!hud)return;
-      const visualOffset=window.visualViewport?.offsetTop||0;
-      const top=hud.getBoundingClientRect().top+window.scrollY-visualOffset-7;
-      window.scrollTo(0,Math.max(0,top));
-    };
-
     if(mobileShiftStart){
+      // Keep Mobile Safari stable: do not auto-focus the textarea and do not
+      // run repeated scroll corrections. Show the complete game at a fixed
+      // position; the player taps the input once to open the keyboard.
       if(document.activeElement&&typeof document.activeElement.blur==="function"){
         document.activeElement.blur();
       }
 
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
-          $("typingInput").focus({preventScroll:true});
-
-          // Let iOS finish opening the keyboard, then place the complete HUD
-          // at the top so WPM, accuracy, clock and rejected remain visible.
-          setTimeout(alignMobileHud,180);
-          setTimeout(alignMobileHud,360);
-
-          if(window.visualViewport){
-            window.visualViewport.addEventListener("resize",()=>{
-              requestAnimationFrame(alignMobileHud);
-            },{once:true});
-          }
+          const panel=$("gamePanel");
+          const top=panel.getBoundingClientRect().top+window.scrollY;
+          window.scrollTo(0,Math.max(0,top-7));
         });
       });
     }else{
