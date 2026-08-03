@@ -1282,6 +1282,117 @@ textarea:focus{border-color:var(--amber)}
   .result-replay-actions .primary{grid-column:auto}
 }
 
+/* Mobile gameplay mode: keep the actual typing game readable above the keyboard */
+@media(max-width:760px){
+  .game-panel{padding:6px}
+  .race{
+    padding:10px;
+    gap:8px;
+  }
+  .memo-head{
+    gap:8px;
+    align-items:center;
+  }
+  .memo-kicker{font-size:8px}
+  .memo-number{font-size:20px}
+  .char-count{font-size:8px;max-width:92px}
+
+  .hud{
+    position:sticky;
+    top:0;
+    z-index:15;
+    box-shadow:0 8px 18px rgba(0,0,0,.5);
+  }
+  .hud-item{
+    padding:8px 7px;
+  }
+  .hud-item small{
+    font-size:7px;
+    margin-bottom:4px;
+    letter-spacing:.12em;
+  }
+  .hud-item strong{
+    font-size:clamp(22px,7vw,31px);
+  }
+
+  .target{
+    min-height:0;
+    max-height:190px;
+    overflow-y:auto;
+    padding:13px;
+    font-size:15px;
+    line-height:1.45;
+    color:#d8c9b8;
+    scroll-padding-top:8px;
+  }
+  .target .pending{color:#88776b}
+  .target .correct{color:#f2e7d5}
+  .target .wrong{
+    color:#ff8070;
+    background:rgba(223,103,87,.18);
+  }
+
+  textarea{
+    min-height:58px;
+    max-height:92px;
+    padding:12px;
+    font-size:15px;
+    line-height:1.35;
+  }
+  textarea::placeholder{font-size:15px}
+
+  .meta{
+    font-size:8px;
+    line-height:1.35;
+  }
+  .system-line{
+    min-height:38px;
+    padding:9px 10px;
+  }
+  .system-line b{font-size:8px}
+  .system-line span{font-size:14px}
+
+  /* While the iPhone keyboard is open, show only the essential game interface. */
+  body.mobile-typing .header,
+  body.mobile-typing .factory-sidebar,
+  body.mobile-typing .memo-head,
+  body.mobile-typing .meta,
+  body.mobile-typing .system-line,
+  body.mobile-typing .note{
+    display:none!important;
+  }
+  body.mobile-typing{
+    padding:4px;
+  }
+  body.mobile-typing .app,
+  body.mobile-typing .game-panel,
+  body.mobile-typing .game-grid,
+  body.mobile-typing .race{
+    width:100%;
+    margin:0;
+  }
+  body.mobile-typing .game-panel{
+    border:0;
+    padding:0;
+    background:#080504;
+  }
+  body.mobile-typing .game-grid{
+    display:block;
+  }
+  body.mobile-typing .race{
+    padding:6px;
+    gap:7px;
+    border:0;
+  }
+  body.mobile-typing .hud{
+    top:0;
+  }
+  body.mobile-typing .target{
+    max-height:38vh;
+    min-height:120px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1977,6 +2088,7 @@ textarea:focus{border-color:var(--amber)}
   }
 
   function startRace(){
+    document.body.classList.remove("mobile-typing");
     playerName=$("xName").value.trim()||"@you";
     if(!playerName.startsWith("@"))playerName="@"+playerName;
     localStorage.setItem("cuck-factory-x-name",playerName);
@@ -2093,6 +2205,8 @@ textarea:focus{border-color:var(--amber)}
     paintUi();
     setRecording(false);
     $("typingInput").disabled=true;
+    $("typingInput").blur();
+    document.body.classList.remove("mobile-typing");
 
     const m=metrics();
 
@@ -2184,6 +2298,22 @@ textarea:focus{border-color:var(--amber)}
     localStorage.setItem("cuck-factory-last-score",JSON.stringify(lastResult));
     scoreSubmissionPromise=submitCompletedShift(lastResult,finalCarrot);
   }
+
+  function setMobileTypingMode(on){
+    if(window.matchMedia("(max-width: 760px)").matches){
+      document.body.classList.toggle("mobile-typing",on);
+      if(on){
+        requestAnimationFrame(()=>{
+          $("gamePanel").scrollIntoView({block:"start",behavior:"auto"});
+        });
+      }
+    }
+  }
+
+  $("typingInput").addEventListener("focus",()=>setMobileTypingMode(true));
+  $("typingInput").addEventListener("blur",()=>{
+    setTimeout(()=>setMobileTypingMode(false),120);
+  });
 
   $("typingInput").addEventListener("keydown",e=>{
     if(finished){
