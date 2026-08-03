@@ -2365,19 +2365,39 @@ body.modal-open{overflow:hidden}
     $("typingInput").disabled=false;
     autoSizeInput();
 
-    // Mobile Safari keeps the old result-page scroll position when another
-    // shift starts. Reset the viewport before opening the keyboard so every
-    // shift begins with the same memo/header position.
+    // Mobile Safari can scroll the page again when the keyboard opens,
+    // especially after returning from the result screen. Focus first, then
+    // realign the game after the visual viewport has settled.
     const mobileShiftStart=window.matchMedia("(max-width:760px)").matches;
     if(mobileShiftStart){
       if(document.activeElement&&typeof document.activeElement.blur==="function"){
         document.activeElement.blur();
       }
+
+      const alignMobileShift=()=>{
+        const panel=$("gamePanel");
+        const top=panel.getBoundingClientRect().top+window.scrollY;
+        window.scrollTo({top:Math.max(0,top-7),behavior:"auto"});
+      };
+
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
-          $("gamePanel").scrollIntoView({block:"start",behavior:"auto"});
-          window.scrollBy(0,-7);
-          setTimeout(()=>$("typingInput").focus({preventScroll:true}),90);
+          alignMobileShift();
+          $("typingInput").focus({preventScroll:true});
+
+          // iOS performs its own delayed textarea scroll while the keyboard
+          // and browser bars animate. Re-apply the intended start position.
+          [80,180,320,520,760].forEach(delay=>{
+            setTimeout(alignMobileShift,delay);
+          });
+
+          if(window.visualViewport){
+            const settleViewport=()=>{
+              alignMobileShift();
+              setTimeout(alignMobileShift,90);
+            };
+            window.visualViewport.addEventListener("resize",settleViewport,{once:true});
+          }
         });
       });
     }else{
