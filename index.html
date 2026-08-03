@@ -1565,6 +1565,78 @@ body.modal-open{overflow:hidden}
 }
 
 
+
+@media(min-width:761px){
+  .factory-sidebar{
+    gap:9px;
+  }
+
+  .camera-feed{
+    padding:10px;
+  }
+
+  .camera-portrait{
+    height:190px;
+    aspect-ratio:auto;
+    margin-top:9px;
+  }
+
+  .camera-portrait img{
+    object-position:center 39%;
+  }
+
+  .carrot-meter{
+    margin-top:12px;
+    padding-top:10px;
+  }
+
+  .carrot-track{
+    height:58px;
+    margin-top:7px;
+  }
+
+  .carrot-line{
+    top:37px;
+  }
+
+  .carrot-player{
+    top:24px;
+  }
+
+  .carrot-icon{
+    transform:scale(.86) rotate(5deg);
+    transform-origin:top right;
+  }
+
+  .leaderboard{
+    padding:11px 13px;
+  }
+
+  .leaderboard .panel-title{
+    margin-bottom:6px;
+  }
+
+  .leaderboard .racer{
+    gap:4px;
+    padding:5px 0;
+  }
+
+  .leaderboard .racer-head{
+    font-size:10px;
+  }
+
+  .leaderboard .track{
+    height:6px;
+  }
+
+  .leaderboard .racer.you{
+    margin:0 -6px;
+    padding-left:6px;
+    padding-right:6px;
+    background:linear-gradient(90deg,rgba(169,47,39,.13),transparent);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2265,6 +2337,16 @@ body.modal-open{overflow:hidden}
   }
 
   function startRace(options={}){
+    const mobileShiftStart=window.matchMedia("(max-width:760px)").matches;
+    const fromReplay=options.fromReplay===true;
+
+    if(mobileShiftStart&&fromReplay){
+      if(document.activeElement&&typeof document.activeElement.blur==="function"){
+        document.activeElement.blur();
+      }
+      window.scrollTo(0,0);
+    }
+
     playerName=$("xName").value.trim()||"@you";
     if(!playerName.startsWith("@"))playerName="@"+playerName;
     localStorage.setItem("cuck-factory-x-name",playerName);
@@ -2276,9 +2358,6 @@ body.modal-open{overflow:hidden}
     $("typingInput").value="";
     $("typingInput").disabled=false;
     autoSizeInput();
-
-    const mobileShiftStart=window.matchMedia("(max-width:760px)").matches;
-    const autoFocusMobile=options.autoFocusMobile!==false;
 
     const alignMobileShift=()=>{
       const panel=$("gamePanel");
@@ -2294,10 +2373,26 @@ body.modal-open{overflow:hidden}
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
           alignMobileShift();
+          $("typingInput").focus({preventScroll:true});
 
-          if(autoFocusMobile){
-            $("typingInput").focus({preventScroll:true});
-            setTimeout(alignMobileShift,120);
+          // iOS changes both the visual viewport and the browser chrome after
+          // focus. Keep the same top alignment used by the first shift.
+          let corrections=0;
+          const correctReplayPosition=()=>{
+            alignMobileShift();
+            corrections+=1;
+            if(corrections<8){
+              requestAnimationFrame(correctReplayPosition);
+            }
+          };
+          requestAnimationFrame(correctReplayPosition);
+
+          if(window.visualViewport){
+            const onViewportChange=()=>{
+              alignMobileShift();
+              requestAnimationFrame(alignMobileShift);
+            };
+            window.visualViewport.addEventListener("resize",onViewportChange,{once:true});
           }
         });
       });
@@ -2588,7 +2683,7 @@ body.modal-open{overflow:hidden}
   $("restartBtn").onclick=()=>{
     startRace();
   };
-  $("againBtn").onclick=()=>startRace({autoFocusMobile:false});
+  $("againBtn").onclick=()=>startRace({fromReplay:true});
   $("changeCuckBtn").onclick=()=>{
     cancelAnimationFrame(raf);
     clearTimeout(speechTimer);
