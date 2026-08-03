@@ -926,6 +926,362 @@ textarea:focus{border-color:var(--amber)}
   .result-actions button{width:100%}
 }
 
+
+
+/* Compact single-screen result dashboard */
+.result-layout{
+  grid-template-columns:250px minmax(0,1fr);
+  align-items:start;
+}
+.result-race{padding:14px}
+.result-summary{
+  padding:14px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 330px;
+  gap:14px;
+  align-items:start;
+}
+.result-certificate{min-width:0}
+.result-cert-body{min-height:330px}
+.result-cert-copy{padding:24px 26px 20px}
+.result-shortfall{margin:16px auto 8px;font-size:clamp(46px,5.4vw,74px)}
+.result-carrot-track{height:70px;margin:18px auto 14px}
+.result-carrot-line{top:44px}
+.result-carrot-you{top:27px}
+.result-carrot{top:0;transform:scale(.88) rotate(5deg);transform-origin:top right}
+.result-cert-score-label{margin-top:12px}
+.result-cert-score{font-size:58px;margin-top:4px}
+.result-cert-data{margin-top:14px}
+.result-cert-data-item{padding:9px 6px 8px}
+.result-cert-data-item strong{font-size:20px}
+.result-nearly-line{margin-top:12px;font-size:17px}
+.result-cert-footnote{margin-top:12px;padding-top:10px}
+.result-cert-image{min-height:330px}
+.result-cert-top,.result-cert-bottom{padding:9px 14px}
+.result-cert-bottom{font-size:11px}
+
+.result-control-rail{
+  display:grid;
+  gap:10px;
+  min-width:0;
+}
+.result-next-action{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(48,24,18,.72),rgba(19,11,8,.94));
+  padding:12px;
+  display:grid;
+  gap:8px;
+}
+.result-next-action small{
+  color:var(--amber);
+  letter-spacing:.16em;
+  font-size:9px;
+}
+.result-next-buttons{display:grid;grid-template-columns:1fr auto;gap:8px}
+.result-next-buttons .primary{min-width:0;width:100%;padding:13px 12px}
+.result-next-buttons .secondary{min-width:0;padding:11px 10px;font-size:10px}
+.result-next-note{color:var(--muted);font-size:9px;letter-spacing:.08em;text-align:center}
+
+.result-control-rail #placement{
+  margin:0;
+  padding:9px 10px;
+  border:1px solid var(--line-soft);
+  background:#0b0705;
+  font-size:10px;
+  line-height:1.35;
+}
+.result-control-rail .result-grid{
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin:0;
+}
+.result-control-rail .result-card{padding:8px 5px}
+.result-control-rail .result-card strong{font-size:18px}
+.result-control-rail .management-verdict{margin:0;padding:10px 11px}
+.result-control-rail .management-verdict strong{font-size:16px;line-height:1.2}
+.result-control-rail .share-preview{margin:0;padding:11px}
+.result-control-rail .share-preview h3{font-size:21px;margin-bottom:5px}
+.result-control-rail .share-preview .share-score{gap:8px;font-size:10px}
+.result-control-rail .share-preview blockquote{
+  margin-top:8px;padding:8px;font-size:10px;line-height:1.35;
+  max-height:60px;overflow:hidden;
+}
+.result-control-rail .result-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.result-control-rail .result-actions .primary,
+.result-control-rail .result-actions .secondary{
+  min-width:0;
+  width:100%;
+  padding:10px 7px;
+  font-size:10px;
+}
+.result-control-rail .report-status{font-size:8px;line-height:1.35}
+
+@media(max-width:1180px){
+  .result-layout{grid-template-columns:220px minmax(0,1fr)}
+  .result-summary{grid-template-columns:minmax(0,1fr) 285px}
+}
+@media(max-width:980px){
+  .result-layout{grid-template-columns:1fr}
+  .result-race{order:2}
+  .result-summary{order:1;grid-template-columns:1fr}
+  .result-control-rail{grid-template-columns:1fr 1fr}
+  .result-next-action,.result-control-rail .result-actions,.result-control-rail .report-status{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .result-summary{padding:8px}
+  .result-control-rail{grid-template-columns:1fr}
+  .result-next-action,.result-control-rail .result-actions,.result-control-rail .report-status{grid-column:auto}
+  .result-next-buttons{grid-template-columns:1fr}
+  .result-control-rail .result-actions{grid-template-columns:1fr}
+  .result-cert-body{min-height:0}
+}
+
+
+/* Result screen: replay-first layout */
+.result-panel{display:grid;gap:10px}
+.result-replay-bar{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) auto;
+  align-items:center;
+  gap:10px 16px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(48,24,18,.72),rgba(19,11,8,.96));
+}
+.result-replay-copy{display:grid;gap:4px;min-width:0}
+.result-replay-copy small{color:var(--amber);font-size:8px;letter-spacing:.17em}
+.result-replay-copy strong{font-size:10px;letter-spacing:.07em;color:#d9c6af;line-height:1.3}
+.result-replay-actions{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.result-replay-actions .primary{
+  min-width:210px;
+  padding:11px 15px;
+  white-space:nowrap;
+}
+.result-replay-actions .secondary{
+  min-width:104px;
+  padding:9px 11px;
+  font-size:9px;
+  white-space:nowrap;
+}
+.result-replay-bar .report-status{
+  grid-column:1/-1;
+  margin:0;
+  min-height:12px;
+  font-size:8px;
+  line-height:1.2;
+}
+
+.result-layout{
+  grid-template-columns:250px minmax(0,1fr);
+  align-items:start;
+  gap:10px;
+}
+.result-race{padding:14px}
+.result-summary{display:block;padding:10px}
+.result-certificate{
+  width:100%;
+  max-width:none;
+  margin:0 auto;
+}
+.result-cert-top,
+.result-cert-bottom{
+  padding:8px 14px;
+  font-size:8px;
+}
+.result-cert-bottom{font-size:10px}
+.result-cert-body{
+  min-height:0;
+  height:clamp(410px,calc(100vh - 390px),535px);
+}
+.result-cert-copy{
+  padding:18px 24px 15px;
+  min-height:0;
+  overflow:hidden;
+}
+.result-cert-kicker{font-size:8px}
+.result-shortfall{
+  margin:11px auto 5px;
+  font-size:clamp(40px,4.4vw,65px);
+}
+.result-shortfall small{
+  margin-top:7px;
+  font-size:9px;
+}
+.result-carrot-track{
+  height:57px;
+  margin:10px auto 8px;
+}
+.result-carrot-line{top:36px}
+.result-carrot-you{top:20px;padding:4px 7px;font-size:8px}
+.result-carrot-you::after{height:12px}
+.result-carrot{
+  width:36px;
+  height:58px;
+  top:0;
+}
+.result-carrot .result-leaves{
+  left:9px;
+  width:20px;
+  height:15px;
+}
+.result-carrot .result-leaves::before,
+.result-carrot .result-leaves::after{
+  width:5px;
+  height:14px;
+}
+.result-carrot .result-leaves::before{box-shadow:7px 0 0 #789364}
+.result-carrot .result-body{
+  left:6px;
+  top:13px;
+  width:25px;
+  height:42px;
+}
+.result-cert-score-label{
+  margin-top:7px;
+  font-size:9px;
+}
+.result-cert-score{
+  font-size:clamp(42px,4.2vw,58px);
+  margin-top:3px;
+}
+.result-cert-data{
+  margin-top:10px;
+}
+.result-cert-data-item{
+  padding:8px 6px 7px;
+}
+.result-cert-data-item small{
+  font-size:7px;
+  margin-bottom:4px;
+}
+.result-cert-data-item strong{
+  font-size:20px;
+}
+.result-nearly-line{
+  margin-top:9px;
+  font-size:15px;
+  line-height:1.15;
+}
+.result-cert-footnote{
+  margin-top:9px;
+  padding-top:8px;
+  font-size:7px;
+}
+.result-cert-image{min-height:0}
+.result-cert-image img{object-position:center 42%}
+
+.result-details{display:grid;gap:9px;margin-top:10px}
+.result-details #placement{
+  margin:0;
+  padding:8px 10px;
+  border:1px solid var(--line-soft);
+  background:#0b0705;
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.3;
+}
+.result-details .result-grid{
+  margin:0;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:6px;
+}
+.result-details .result-card{padding:8px 5px}
+.result-details .result-card strong{font-size:18px}
+.result-info-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:9px;
+}
+.result-info-grid .management-verdict,
+.result-info-grid .share-preview{
+  margin:0;
+  min-height:100%;
+}
+.result-info-grid .management-verdict{padding:10px 12px}
+.result-info-grid .management-verdict strong{font-size:16px;line-height:1.2}
+.result-info-grid .share-preview{padding:10px}
+.result-info-grid .share-preview h3{font-size:20px;margin-bottom:4px}
+.result-info-grid .share-preview .share-score{gap:9px;font-size:9px}
+.result-info-grid .share-preview blockquote{
+  margin-top:7px;
+  padding:7px;
+  font-size:9px;
+  line-height:1.3;
+  max-height:50px;
+  overflow:hidden;
+}
+
+@media(max-width:1250px){
+  .result-replay-bar{grid-template-columns:1fr}
+  .result-replay-actions{justify-content:flex-start}
+  .result-layout{grid-template-columns:220px minmax(0,1fr)}
+  .result-info-grid{grid-template-columns:1fr}
+  .result-cert-body{height:clamp(400px,calc(100vh - 420px),500px)}
+}
+
+@media(max-width:820px){
+  .result-replay-actions{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;
+  }
+  .result-replay-actions .primary,
+  .result-replay-actions .secondary{
+    width:100%;
+    min-width:0;
+  }
+  .result-layout{grid-template-columns:1fr}
+  .result-race{order:2}
+  .result-summary{order:1}
+  .result-cert-body{height:auto;grid-template-columns:1fr}
+  .result-cert-copy{overflow:visible}
+  .result-cert-image{min-height:280px}
+  .result-details .result-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+  .result-panel{padding:7px}
+  .result-replay-bar{
+    position:sticky;
+    top:7px;
+    z-index:20;
+    padding:9px;
+  }
+  .result-replay-copy strong{font-size:9px}
+  .result-replay-actions{grid-template-columns:1fr 1fr}
+  .result-replay-actions .primary{
+    grid-column:1/-1;
+    font-size:11px;
+  }
+  .result-summary{padding:6px}
+  .result-cert-top{
+    grid-template-columns:1fr;
+    gap:3px;
+    text-align:center;
+  }
+  .result-cert-top span:nth-child(2),
+  .result-cert-top span:last-child{text-align:center}
+  .result-cert-copy{padding:22px 16px 18px}
+  .result-shortfall{font-size:clamp(42px,15vw,62px)}
+  .result-details .result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .result-info-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:430px){
+  .result-replay-actions{grid-template-columns:1fr}
+  .result-replay-actions .primary{grid-column:auto}
+}
+
 </style>
 </head>
 <body>
@@ -1025,6 +1381,22 @@ textarea:focus{border-color:var(--amber)}
   </section>
 
   <section class="result-panel frame hidden" id="resultPanel">
+    <div class="result-replay-bar">
+      <div class="result-replay-copy">
+        <small>NEXT FACTORY ACTION</small>
+        <strong>SHIFT COMPLETE. MANAGEMENT EXPECTS ANOTHER ATTEMPT.</strong>
+      </div>
+      <div class="result-replay-actions">
+        <button class="primary" id="againBtn">WORK ANOTHER SHIFT</button>
+        <button class="secondary" id="changeCuckBtn">CHANGE CUCK</button>
+        <button class="secondary" id="shareBtn">POST ON X</button>
+        <button class="secondary" id="copyReportBtn">COPY IMAGE</button>
+        <button class="secondary" id="downloadReportBtn">DOWNLOAD REPORT</button>
+        <button class="secondary" id="challengeBtn">CHALLENGE A CUCK</button>
+      </div>
+      <div class="report-status" id="reportStatus" aria-live="polite"></div>
+    </div>
+
     <div class="result-layout">
       <aside class="result-race">
         <div class="panel-title">CUCK RACE · FINAL</div>
@@ -1096,41 +1468,38 @@ textarea:focus{border-color:var(--amber)}
           <div class="result-cert-bottom">SHIFT COMPLETE · ALMOST ELIGIBLE · CONTINUE POSTING</div>
         </div>
 
-        <p id="placement"></p>
+        <div class="result-details">
+          <p id="placement"></p>
 
-        <div class="result-grid">
-          <div class="result-card"><small>WPM</small><strong id="resultWpm">0</strong></div>
-          <div class="result-card"><small>ACCURACY</small><strong id="resultAccuracy">0%</strong></div>
-          <div class="result-card"><small>REJECTED</small><strong id="resultRejected">0</strong></div>
-          <div class="result-card"><small>BEST COMBO</small><strong id="resultCombo">0</strong></div>
-          <div class="result-card"><small>FACTORY SCORE</small><strong id="resultFactoryScore">0</strong></div>
-          <div class="result-card"><small>AIRDROP</small><strong id="resultAirdrop">0%</strong></div>
-        </div>
-
-        <div class="management-verdict">
-          <small>MANAGEMENT VERDICT</small>
-          <strong id="managementVerdict">Performance recorded.</strong>
-        </div>
-
-        <div class="share-preview" id="sharePreview">
-          <small>SHIFT REPORT PREVIEW</small>
-          <h3 id="sharePreviewName">@worker</h3>
-          <div class="share-score">
-            <span id="sharePreviewWpm">0 WPM</span>
-            <span id="sharePreviewAccuracy">0% accuracy</span>
-            <span id="sharePreviewPlace">#4 of 4</span>
+          <div class="result-grid">
+            <div class="result-card"><small>WPM</small><strong id="resultWpm">0</strong></div>
+            <div class="result-card"><small>ACCURACY</small><strong id="resultAccuracy">0%</strong></div>
+            <div class="result-card"><small>REJECTED</small><strong id="resultRejected">0</strong></div>
+            <div class="result-card"><small>BEST COMBO</small><strong id="resultCombo">0</strong></div>
+            <div class="result-card"><small>FACTORY SCORE</small><strong id="resultFactoryScore">0</strong></div>
+            <div class="result-card"><small>AIRDROP</small><strong id="resultAirdrop">0%</strong></div>
           </div>
-          <blockquote id="sharePreviewPost"></blockquote>
+
+          <div class="result-info-grid">
+            <div class="management-verdict">
+              <small>MANAGEMENT VERDICT</small>
+              <strong id="managementVerdict">Performance recorded.</strong>
+            </div>
+
+            <div class="share-preview" id="sharePreview">
+              <small>SHIFT REPORT PREVIEW</small>
+              <h3 id="sharePreviewName">@worker</h3>
+              <div class="share-score">
+                <span id="sharePreviewWpm">0 WPM</span>
+                <span id="sharePreviewAccuracy">0% accuracy</span>
+                <span id="sharePreviewPlace">#4 of 4</span>
+              </div>
+              <blockquote id="sharePreviewPost"></blockquote>
+            </div>
+          </div>
+
         </div>
 
-        <div class="result-actions">
-          <button class="primary" id="downloadReportBtn">DOWNLOAD SHIFT REPORT</button>
-          <button class="secondary" id="copyReportBtn">COPY REPORT IMAGE</button>
-          <button class="secondary" id="shareBtn">POST ON X</button>
-          <button class="secondary" id="challengeBtn">CHALLENGE A CUCK</button>
-          <button class="secondary" id="againBtn">WORK ANOTHER SHIFT</button>
-        </div>
-        <div class="report-status" id="reportStatus" aria-live="polite"></div>
         <canvas id="reportCanvas" width="1600" height="900" class="hidden" aria-hidden="true"></canvas>
       </div>
     </div>
@@ -1900,6 +2269,22 @@ textarea:focus{border-color:var(--amber)}
 
   $("startBtn").onclick=startRace;
   $("againBtn").onclick=startRace;
+  $("changeCuckBtn").onclick=()=>{
+    cancelAnimationFrame(raf);
+    clearTimeout(speechTimer);
+    clearTimeout(speechHideTimer);
+    clearTimeout(factoryStatusTimer);
+    startedAt=0;
+    finished=false;
+    $("gamePanel").classList.add("hidden");
+    $("resultPanel").classList.add("hidden");
+    $("startPanel").classList.remove("hidden");
+    $("xName").value="";
+    localStorage.removeItem("cuck-factory-x-name");
+    setRecording(false);
+    window.scrollTo({top:0,behavior:"smooth"});
+    setTimeout(()=>$("xName").focus(),250);
+  };
 
 
   function reportFileName(){
