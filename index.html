@@ -1637,6 +1637,17 @@ body.modal-open{overflow:hidden}
   }
 }
 
+
+@media(max-width:760px){
+  textarea,
+  textarea::placeholder{
+    font-size:16px;
+  }
+  textarea{
+    scroll-margin-top:8px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2360,20 +2371,25 @@ body.modal-open{overflow:hidden}
     autoSizeInput();
 
     if(mobileShiftStart){
-      // Keep Mobile Safari stable: do not auto-focus the textarea and do not
-      // run repeated scroll corrections. Show the complete game at a fixed
-      // position; the player taps the input once to open the keyboard.
       if(document.activeElement&&typeof document.activeElement.blur==="function"){
         document.activeElement.blur();
       }
 
-      requestAnimationFrame(()=>{
+      if(fromReplay){
+        // After the result screen, return to the game without opening the
+        // keyboard. This avoids Safari restoring the old result-page offset.
         requestAnimationFrame(()=>{
-          const panel=$("gamePanel");
-          const top=panel.getBoundingClientRect().top+window.scrollY;
-          window.scrollTo(0,Math.max(0,top-7));
+          requestAnimationFrame(()=>{
+            const panel=$("gamePanel");
+            const top=panel.getBoundingClientRect().top+window.scrollY;
+            window.scrollTo(0,Math.max(0,top-7));
+          });
         });
-      });
+      }else{
+        // Normal first start and the restart button use Safari's native focus
+        // behavior. With a 16px textarea Safari no longer zooms the page.
+        $("typingInput").focus();
+      }
     }else{
       $("typingInput").focus();
     }
