@@ -2364,7 +2364,26 @@ body.modal-open{overflow:hidden}
     $("typingInput").value="";
     $("typingInput").disabled=false;
     autoSizeInput();
-    $("typingInput").focus();
+
+    // Mobile Safari keeps the old result-page scroll position when another
+    // shift starts. Reset the viewport before opening the keyboard so every
+    // shift begins with the same memo/header position.
+    const mobileShiftStart=window.matchMedia("(max-width:760px)").matches;
+    if(mobileShiftStart){
+      if(document.activeElement&&typeof document.activeElement.blur==="function"){
+        document.activeElement.blur();
+      }
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          $("gamePanel").scrollIntoView({block:"start",behavior:"auto"});
+          window.scrollBy(0,-7);
+          setTimeout(()=>$("typingInput").focus({preventScroll:true}),90);
+        });
+      });
+    }else{
+      $("typingInput").focus();
+    }
+
     $("hint").textContent="Your first key starts the clock. Mistakes are registered.";
     startedAt=0;
     finished=false;
