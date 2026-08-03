@@ -2359,10 +2359,12 @@ body.modal-open{overflow:hidden}
     $("typingInput").disabled=false;
     autoSizeInput();
 
-    const alignMobileShift=()=>{
-      const panel=$("gamePanel");
-      const top=panel.getBoundingClientRect().top+window.scrollY;
-      window.scrollTo(0,Math.max(0,top-7));
+    const alignMobileHud=()=>{
+      const hud=document.querySelector(".hud");
+      if(!hud)return;
+      const visualOffset=window.visualViewport?.offsetTop||0;
+      const top=hud.getBoundingClientRect().top+window.scrollY-visualOffset-7;
+      window.scrollTo(0,Math.max(0,top));
     };
 
     if(mobileShiftStart){
@@ -2372,27 +2374,17 @@ body.modal-open{overflow:hidden}
 
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
-          alignMobileShift();
           $("typingInput").focus({preventScroll:true});
 
-          // iOS changes both the visual viewport and the browser chrome after
-          // focus. Keep the same top alignment used by the first shift.
-          let corrections=0;
-          const correctReplayPosition=()=>{
-            alignMobileShift();
-            corrections+=1;
-            if(corrections<8){
-              requestAnimationFrame(correctReplayPosition);
-            }
-          };
-          requestAnimationFrame(correctReplayPosition);
+          // Let iOS finish opening the keyboard, then place the complete HUD
+          // at the top so WPM, accuracy, clock and rejected remain visible.
+          setTimeout(alignMobileHud,180);
+          setTimeout(alignMobileHud,360);
 
           if(window.visualViewport){
-            const onViewportChange=()=>{
-              alignMobileShift();
-              requestAnimationFrame(alignMobileShift);
-            };
-            window.visualViewport.addEventListener("resize",onViewportChange,{once:true});
+            window.visualViewport.addEventListener("resize",()=>{
+              requestAnimationFrame(alignMobileHud);
+            },{once:true});
           }
         });
       });
