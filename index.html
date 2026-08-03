@@ -1620,6 +1620,39 @@ body.modal-open{overflow:hidden}
   .restart-shift{width:40px;padding:6px}
 }
 
+
+@media(max-width:760px){
+  .memo-head{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    align-items:start!important;
+    gap:10px!important;
+  }
+  .memo-actions{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-end!important;
+    gap:6px!important;
+  }
+  .char-count{
+    order:1;
+    text-align:right;
+    max-width:none!important;
+    font-size:8px!important;
+    line-height:1.2!important;
+  }
+  .restart-shift{
+    order:2;
+    width:100%;
+    min-width:92px;
+    justify-content:center;
+  }
+  .memo-number{
+    line-height:1.05;
+    max-width:100%;
+  }
+}
+
 </style>
 </head>
 <body>
