@@ -2994,18 +2994,52 @@ body.modal-open{overflow:hidden}
   };
 
   $("copyReportBtn").onclick=async()=>{
-    try{
-      setReportStatus("PREPARING REPORT IMAGE...");
-      const blob=await reportBlob();
+    setReportStatus("PREPARING REPORT IMAGE...");
 
-      // Clipboard image writing requires HTTPS (or localhost) and browser support.
-      if(window.isSecureContext && navigator.clipboard && typeof ClipboardItem!=="undefined"){
+    let blob;
+    try{
+      blob=await reportBlob();
+    }catch(err){
+      console.error(err);
+      setReportStatus("REPORT IMAGE COULD NOT BE GENERATED.","error");
+      return;
+    }
+
+    // Chrome/desktop browsers can usually write PNG data directly.
+    if(window.isSecureContext && navigator.clipboard && typeof ClipboardItem!=="undefined"){
+      try{
         await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);
         setReportStatus("REPORT IMAGE COPIED. PASTE IT INTO X.","ready");
         return;
+      }catch(err){
+        // iPhone Safari exposes parts of the Clipboard API but commonly rejects
+        // direct PNG writes. Continue to the native share/download fallback.
+        console.warn("Direct image clipboard write unavailable:",err);
       }
+    }
 
-      // Local file preview and unsupported browsers: download instead.
+    const file=new File([blob],reportFileName(),{type:"image/png"});
+
+    // On iPhone, the native share sheet is the reliable image export route.
+    if(navigator.share && navigator.canShare?.({files:[file]})){
+      try{
+        await navigator.share({
+          files:[file],
+          title:"Ansem's Cuck Factory Shift Report"
+        });
+        setReportStatus("REPORT IMAGE OPENED IN THE SHARE SHEET.","ready");
+        return;
+      }catch(err){
+        if(err?.name==="AbortError"){
+          setReportStatus("IMAGE SHARE CANCELLED.");
+          return;
+        }
+        console.warn("Native image sharing unavailable:",err);
+      }
+    }
+
+    // Final fallback for browsers without image clipboard or file sharing.
+    try{
       const url=URL.createObjectURL(blob);
       const a=document.createElement("a");
       a.href=url;
@@ -3014,10 +3048,10 @@ body.modal-open{overflow:hidden}
       a.click();
       a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),1200);
-      setReportStatus("IMAGE COPY NEEDS HTTPS. REPORT DOWNLOADED INSTEAD.","ready");
+      setReportStatus("IMAGE COPY IS NOT SUPPORTED HERE. REPORT DOWNLOADED INSTEAD.","ready");
     }catch(err){
       console.error(err);
-      setReportStatus("REPORT GENERATION FAILED. TEST THE HOSTED GITHUB PAGES VERSION.","error");
+      setReportStatus("IMAGE EXPORT IS NOT SUPPORTED BY THIS BROWSER.","error");
     }
   };
 
