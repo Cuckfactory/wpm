@@ -134,35 +134,42 @@ button{cursor:pointer}
 .game-panel,.result-panel{padding:12px}
 .game-grid{
   display:grid;
-  grid-template-columns:270px minmax(0,1fr) 320px;
+  grid-template-columns:300px minmax(0,1fr);
   gap:12px;
-  align-items:stretch;
+  align-items:start;
+}
+.factory-sidebar{
+  display:grid;
+  gap:12px;
+  align-content:start;
+  min-width:0;
 }
 .leaderboard,.race,.camera-feed,.result-race,.result-summary{
   border:1px solid var(--line);
   background:rgba(12,7,5,.95)
 }
-.leaderboard{padding:16px}
+.leaderboard{padding:13px}
 .panel-title{
-  font-size:12px;
-  letter-spacing:.16em;
+  font-size:11px;
+  letter-spacing:.15em;
   color:var(--amber);
-  margin-bottom:14px
+  margin-bottom:10px
 }
 .panel-sub{
   color:var(--muted);
-  font-size:10px;
-  margin-top:5px;
-  letter-spacing:.08em
+  font-size:9px;
+  margin-top:4px;
+  letter-spacing:.07em;
+  line-height:1.3
 }
-.racer{display:grid;gap:7px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.racer{display:grid;gap:5px;padding:8px 0;border-bottom:1px solid var(--line-soft)}
 .racer:last-child{border-bottom:0}
-.racer-head{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.racer-head{display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.2}
 .racer.you .name{color:#fff;font-weight:700}
 .name{color:#d9c6af}
 .racer-wpm{color:var(--amber);font-weight:700}
 .track{
-  height:9px;
+  height:7px;
   background:#080504;
   border:1px solid #31211a;
   overflow:hidden
@@ -223,9 +230,13 @@ button{cursor:pointer}
   padding:20px;
   border:1px solid var(--line);
   background:#080504;
-  font:600 clamp(16px,1.65vw,23px)/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  word-break:break-word
+  font:600 clamp(16px,1.55vw,22px)/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  word-break:normal;
+  overflow-wrap:normal;
+  hyphens:none;
+  white-space:pre-wrap
 }
+.target-word{white-space:nowrap}
 .target .correct{color:var(--text)}
 .target .wrong{color:var(--bad);background:rgba(223,103,87,.12)}
 .target .current{background:var(--amber);color:#1c0e09}
@@ -276,7 +287,7 @@ textarea:focus{border-color:var(--amber)}
 
 .camera-feed{
   position:relative;
-  min-height:100%;
+  min-height:0;
   overflow:hidden;
   padding:12px;
   background:
@@ -865,11 +876,8 @@ textarea:focus{border-color:var(--amber)}
 }
 
 @media(max-width:1050px){
-  .game-grid{grid-template-columns:240px minmax(0,1fr)}
-  .camera-feed{grid-column:1/-1;display:grid;grid-template-columns:210px 1fr;gap:14px}
-  .camera-portrait{margin-top:0}
-  .camera-top{grid-column:1/-1}
-  .supervisor-state,.supervisor-message{align-self:start}
+  .game-grid{grid-template-columns:270px minmax(0,1fr)}
+  .camera-portrait{margin-top:10px}
 }
 @media(max-width:760px){
   body{padding:7px}
@@ -880,9 +888,9 @@ textarea:focus{border-color:var(--amber)}
   .camera-status{border-left:0;padding-left:0;text-align:left}
   .start-panel{grid-template-columns:1fr}
   .game-grid{grid-template-columns:1fr}
+  .factory-sidebar{order:2}
   .race{order:1}
-  .leaderboard{order:2}
-  .camera-feed{order:3;grid-template-columns:1fr}
+  .camera-feed{display:block}
   .camera-portrait{width:100%}
   .camera-speech{left:12%;right:12%;bottom:7px;font-size:11px;padding:5px 7px;min-height:26px}
   .hud{grid-template-columns:repeat(2,1fr)}
@@ -918,35 +926,6 @@ textarea:focus{border-color:var(--amber)}
   .result-actions button{width:100%}
 }
 
-
-.switch-cuck-link{
-  border:1px solid var(--line);
-  background:rgba(24,16,13,.72);
-  color:var(--muted);
-  padding:8px 11px;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:.12em;
-}
-.switch-cuck-link:hover{color:var(--text);border-color:#76503c}
-.modal-copy{color:#cdbba2;line-height:1.55;margin:18px 0 0}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:20px}
-.modal-actions button{min-width:180px}
-.replacement-stamp{
-  margin-top:18px;
-  border:1px solid var(--line);
-  border-left:3px solid var(--accent);
-  padding:16px;
-  background:#0a0504;
-  color:var(--amber-soft);
-  letter-spacing:.12em;
-  line-height:1.7;
-}
-@media(max-width:760px){
-  .switch-cuck-link{width:100%}
-  .modal-actions button{width:100%}
-}
-
 </style>
 </head>
 <body>
@@ -958,7 +937,6 @@ textarea:focus{border-color:var(--amber)}
     </div>
     <div class="header-actions">
       <button class="leader-link" id="weeklyBtn">CUCK OF THE WEEK</button>
-      <button class="switch-cuck-link hidden" id="switchCuckBtn">SWITCH CUCK</button>
       <div class="status"><small>AIRDROP STATUS</small><strong>PENDING</strong></div>
     </div>
     <div class="camera-status" id="cameraStatus">
@@ -977,9 +955,37 @@ textarea:focus{border-color:var(--amber)}
 
   <section class="game-panel frame hidden" id="gamePanel">
     <div class="game-grid">
-      <aside class="leaderboard">
-        <div class="panel-title">CUCK RACE<div class="panel-sub">RECORDED WORKER DATA · LIVE COMPARISON</div></div>
-        <div id="racers"></div>
+      <aside class="factory-sidebar">
+        <section class="camera-feed">
+          <div class="camera-top">
+            <span>CAM 04 · SUPERVISOR</span>
+            <span id="camRecText">STANDBY</span>
+          </div>
+          <div class="camera-portrait" id="cameraPortrait">
+            <img id="supervisorImage" src="assets/neutral.webp" alt="Ansem supervisor camera feed">
+            <div class="camera-speech" id="cameraSpeech" aria-live="polite">Clock's ticking.</div>
+          </div>
+          <div class="carrot-meter" aria-label="Distance to carrot">
+            <div class="carrot-meter-head">
+              <span>CARROT PROXIMITY</span>
+              <span class="carrot-distance" id="carrotDistance">11.5 cm</span>
+            </div>
+            <div class="carrot-track">
+              <div class="carrot-line"></div>
+              <div class="carrot-player" id="carrotPlayer">YOU</div>
+              <div class="carrot-icon" id="carrotIcon" aria-hidden="true">
+                <span class="carrot-leaves"></span>
+                <span class="carrot-body"></span>
+              </div>
+            </div>
+            <div class="carrot-caption" id="carrotCaption">PROXIMITY ESTIMATE</div>
+          </div>
+        </section>
+
+        <section class="leaderboard">
+          <div class="panel-title">CUCK RACE<div class="panel-sub">RECORDED WORKER DATA · LIVE COMPARISON</div></div>
+          <div id="racers"></div>
+        </section>
       </aside>
 
       <main class="race">
@@ -1015,35 +1021,6 @@ textarea:focus{border-color:var(--amber)}
         </div>
       </main>
 
-      <aside class="camera-feed">
-        <div class="camera-top">
-          <span>CAM 04 · SUPERVISOR</span>
-          <span id="camRecText">STANDBY</span>
-        </div>
-        <div class="camera-portrait" id="cameraPortrait">
-          <img id="supervisorImage" src="assets/neutral.webp" alt="Ansem supervisor camera feed">
-          <div class="camera-speech" id="cameraSpeech" aria-live="polite">Clock's ticking.</div>
-        </div>
-        <div>
-          <div class="carrot-meter" aria-label="Distance to carrot">
-            <div class="carrot-meter-head">
-              <span>CARROT PROXIMITY</span>
-              <span class="carrot-distance" id="carrotDistance">11.5 cm</span>
-            </div>
-            <div class="carrot-track">
-              <div class="carrot-line"></div>
-              <div class="carrot-player" id="carrotPlayer">YOU</div>
-              <div class="carrot-icon" id="carrotIcon" aria-hidden="true">
-                <span class="carrot-leaves"></span>
-                <span class="carrot-body"></span>
-              </div>
-            </div>
-            <div class="carrot-caption" id="carrotCaption">
-              PROXIMITY ESTIMATE
-            </div>
-          </div>
-        </div>
-      </aside>
     </div>
   </section>
 
@@ -1152,7 +1129,6 @@ textarea:focus{border-color:var(--amber)}
           <button class="secondary" id="shareBtn">POST ON X</button>
           <button class="secondary" id="challengeBtn">CHALLENGE A CUCK</button>
           <button class="secondary" id="againBtn">WORK ANOTHER SHIFT</button>
-          <button class="secondary" id="changeCuckBtn">CHANGE CUCK</button>
         </div>
         <div class="report-status" id="reportStatus" aria-live="polite"></div>
         <canvas id="reportCanvas" width="1600" height="900" class="hidden" aria-hidden="true"></canvas>
@@ -1170,32 +1146,6 @@ textarea:focus{border-color:var(--amber)}
       </div>
       <div id="weeklyList" class="weekly-list"></div>
       <p class="modal-note" id="weeklyNote">LIVE SHARED FACTORY RECORDS · RANKED BY FACTORY SCORE</p>
-    </div>
-  </div>
-
-  <div class="overlay hidden" id="abandonOverlay">
-    <div class="modal">
-      <div class="modal-head">
-        <div><small>FACTORY WARNING</small><h2>ABANDON SHIFT?</h2></div>
-        <button class="close" id="abandonClose">×</button>
-      </div>
-      <p class="modal-copy">Your current progress will be lost. Management will record the disappearance as voluntary.</p>
-      <div class="modal-actions">
-        <button class="secondary" id="continueShiftBtn">CONTINUE SHIFT</button>
-        <button class="primary" id="confirmChangeCuckBtn">CHANGE CUCK</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="overlay hidden" id="replacedOverlay">
-    <div class="modal">
-      <div class="modal-head">
-        <div><small>PERSONNEL UPDATE</small><h2>CUCK REPLACED</h2></div>
-      </div>
-      <div class="replacement-stamp">CURRENT CUCK REMOVED FROM ACTIVE DUTY.<br>NEXT CUCK REPORT TO TERMINAL.</div>
-      <div class="modal-actions">
-        <button class="primary" id="nextCuckBtn">NEXT CUCK</button>
-      </div>
     </div>
   </div>
 </div>
@@ -1342,12 +1292,22 @@ textarea:focus{border-color:var(--amber)}
 
   function renderTarget(){
     const typed=$("typingInput").value;
-    $("targetText").innerHTML=[...target].map((ch,i)=>{
-      let cls="pending";
-      if(i<typed.length) cls=typed[i]===ch?"correct":"wrong";
-      else if(i===typed.length) cls="current";
-      return `<span class="${cls}">${ch===" "?"&nbsp;":esc(ch)}</span>`;
+    let index=0;
+    const tokens=target.match(/\S+|\s+/g)||[];
+
+    $("targetText").innerHTML=tokens.map(token=>{
+      const isWhitespace=/^\s+$/.test(token);
+      const chars=[...token].map(ch=>{
+        const i=index++;
+        let cls="pending";
+        if(i<typed.length) cls=typed[i]===ch?"correct":"wrong";
+        else if(i===typed.length) cls="current";
+        return `<span class="${cls}">${ch===" "?" ":esc(ch)}</span>`;
+      }).join("");
+
+      return isWhitespace?chars:`<span class="target-word">${chars}</span>`;
     }).join("");
+
     $("typedCount").textContent=Math.min(typed.length,target.length);
   }
 
@@ -1618,41 +1578,6 @@ textarea:focus{border-color:var(--amber)}
     $("camRecText").textContent=on?"● REC":"STANDBY";
   }
 
-  function returnToCuckSelection(){
-    clearTimeout(speechTimer);
-    clearTimeout(speechHideTimer);
-    clearTimeout(factoryStatusTimer);
-    clearTimeout(supervisorSwitchTimer);
-    cancelAnimationFrame(raf);
-
-    startedAt=0;
-    finished=false;
-    lastResult=null;
-    scoreSubmissionPromise=null;
-    $("typingInput").value="";
-    $("typingInput").disabled=false;
-    $("gamePanel").classList.add("hidden");
-    $("resultPanel").classList.add("hidden");
-    $("startPanel").classList.remove("hidden");
-    $("switchCuckBtn").classList.add("hidden");
-    $("abandonOverlay").classList.add("hidden");
-    $("replacedOverlay").classList.add("hidden");
-    $("cameraSpeech").classList.remove("show");
-    setRecording(false);
-    setSupervisorVisual("neutral",true);
-    setReportStatus("");
-
-    localStorage.removeItem("cuck-factory-x-name");
-    $("xName").value="";
-    $("xName").focus();
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
-
-  function showCuckReplaced(){
-    $("abandonOverlay").classList.add("hidden");
-    $("replacedOverlay").classList.remove("hidden");
-  }
-
   function playCameraClick(){
     try{
       const AudioCtx=window.AudioContext||window.webkitAudioContext;
@@ -1689,7 +1614,6 @@ textarea:focus{border-color:var(--amber)}
 
     $("startPanel").classList.add("hidden");
     $("resultPanel").classList.add("hidden");
-    $("switchCuckBtn").classList.remove("hidden");
     setReportStatus("");
     $("gamePanel").classList.remove("hidden");
     $("typingInput").value="";
@@ -1799,7 +1723,6 @@ textarea:focus{border-color:var(--amber)}
     cancelAnimationFrame(raf);
     paintUi();
     setRecording(false);
-    $("switchCuckBtn").classList.add("hidden");
     $("typingInput").disabled=true;
 
     const m=metrics();
@@ -1977,18 +1900,6 @@ textarea:focus{border-color:var(--amber)}
 
   $("startBtn").onclick=startRace;
   $("againBtn").onclick=startRace;
-
-  $("changeCuckBtn").onclick=showCuckReplaced;
-  $("switchCuckBtn").onclick=()=>{
-    $("abandonOverlay").classList.remove("hidden");
-  };
-  $("continueShiftBtn").onclick=()=>$("abandonOverlay").classList.add("hidden");
-  $("abandonClose").onclick=()=>$("abandonOverlay").classList.add("hidden");
-  $("confirmChangeCuckBtn").onclick=showCuckReplaced;
-  $("nextCuckBtn").onclick=returnToCuckSelection;
-  $("abandonOverlay").addEventListener("click",e=>{
-    if(e.target===$("abandonOverlay"))$("abandonOverlay").classList.add("hidden");
-  });
 
 
   function reportFileName(){
