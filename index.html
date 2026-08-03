@@ -93,6 +93,274 @@ button{cursor:pointer}
 .status{text-align:right}
 .status small{display:block;color:var(--muted);letter-spacing:.13em;font-size:10px}
 .status strong{display:block;color:var(--amber);font-size:15px;margin-top:4px}
+
+.airdrop-status-btn{
+  appearance:none;
+  border:0;
+  padding:6px 8px;
+  margin:-6px -8px;
+  background:transparent;
+  color:inherit;
+  border-radius:2px;
+  transition:background .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.airdrop-status-btn:hover,
+.airdrop-status-btn:focus-visible{
+  background:rgba(207,156,72,.055);
+  box-shadow:inset 0 0 0 1px rgba(207,156,72,.18);
+  outline:none;
+}
+.airdrop-status-btn:active{transform:translateY(1px)}
+.airdrop-status-btn strong{white-space:nowrap}
+.airdrop-status-dot{
+  display:inline-block;
+  width:5px;
+  height:5px;
+  margin:0 7px 2px 0;
+  border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 7px rgba(207,156,72,.34);
+  animation:airdropPendingPulse 2.2s ease-in-out infinite;
+}
+@keyframes airdropPendingPulse{
+  0%,100%{opacity:.42;transform:scale(.85)}
+  50%{opacity:1;transform:scale(1)}
+}
+
+/* Airdrop eligibility report — visually related to the shift certificate */
+.airdrop-overlay{z-index:70}
+.airdrop-modal{
+  width:min(820px,100%);
+  max-height:calc(100dvh - 28px);
+  padding:0;
+  border:1px solid #8d6f43;
+  background:#efe4c7;
+  color:#29130f;
+  box-shadow:0 30px 100px rgba(0,0,0,.78);
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.airdrop-report-top,
+.airdrop-report-bottom{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:14px;
+  padding:11px 16px;
+  background:#8f211b;
+  color:#f4e7c5;
+  border-bottom:2px solid #c69a41;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.15em;
+}
+.airdrop-report-top span:nth-child(2){text-align:center}
+.airdrop-report-top span:last-child{text-align:right}
+.airdrop-report-close{
+  width:34px;
+  height:34px;
+  padding:0;
+  border:1px solid rgba(244,231,197,.42);
+  background:rgba(41,19,15,.22);
+  color:#f4e7c5;
+  font-size:22px;
+  line-height:1;
+}
+.airdrop-report-body{
+  padding:30px clamp(20px,5vw,52px) 28px;
+  text-align:center;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(98,65,34,.055) 0,
+      rgba(98,65,34,.055) 1px,
+      transparent 1px,
+      transparent 27px
+    ),
+    #efe4c7;
+}
+.airdrop-report-kicker{
+  color:#765b3d;
+  font-size:9px;
+  letter-spacing:.23em;
+  font-weight:700;
+}
+.airdrop-loading{
+  display:grid;
+  gap:13px;
+  margin:27px auto 12px;
+  max-width:560px;
+  text-align:left;
+}
+.airdrop-check-row{
+  display:grid;
+  grid-template-columns:18px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid rgba(118,91,61,.24);
+  color:#765b3d;
+  font-size:10px;
+  letter-spacing:.08em;
+}
+.airdrop-check-icon{
+  width:11px;
+  height:11px;
+  border:1px solid #9f8463;
+  border-radius:50%;
+  position:relative;
+}
+.airdrop-check-row.active .airdrop-check-icon{
+  border-color:#8f211b;
+  animation:airdropSpinner .75s linear infinite;
+  border-top-color:transparent;
+}
+.airdrop-check-row.done .airdrop-check-icon{
+  border:0;
+  border-radius:0;
+}
+.airdrop-check-row.done .airdrop-check-icon::after{
+  content:"✓";
+  position:absolute;
+  left:0;
+  top:-4px;
+  color:#677d50;
+  font-size:14px;
+  font-weight:700;
+}
+.airdrop-check-state{
+  color:#9f8463;
+  font-size:8px;
+  letter-spacing:.12em;
+}
+.airdrop-check-row.active .airdrop-check-state{color:#8f211b}
+.airdrop-check-row.done .airdrop-check-state{color:#677d50}
+@keyframes airdropSpinner{to{transform:rotate(360deg)}}
+
+.airdrop-result{display:none}
+.airdrop-result.revealed{
+  display:block;
+  animation:airdropReveal .35s ease both;
+}
+@keyframes airdropReveal{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+.airdrop-result-label{
+  margin-top:22px;
+  color:#765b3d;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.2em;
+}
+.airdrop-percentage{
+  margin:5px 0 2px;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(58px,12vw,104px);
+  line-height:.92;
+  letter-spacing:-.045em;
+}
+.airdrop-percentage small{
+  display:block;
+  margin-top:10px;
+  color:#765b3d;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:.18em;
+}
+.airdrop-progress{
+  position:relative;
+  height:12px;
+  max-width:540px;
+  margin:24px auto 19px;
+  border:1px solid #9f8463;
+  background:rgba(41,19,15,.08);
+  overflow:hidden;
+}
+.airdrop-progress-fill{
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,#8f211b,#c69a41);
+  transition:width .9s cubic-bezier(.2,.75,.2,1);
+}
+.airdrop-result.revealed .airdrop-progress-fill{width:96%}
+.airdrop-verdict{
+  max-width:580px;
+  margin:0 auto;
+  padding:16px 18px;
+  border-top:1px solid #b99a66;
+  border-bottom:1px solid #b99a66;
+}
+.airdrop-verdict small{
+  display:block;
+  margin-bottom:8px;
+  color:#765b3d;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.18em;
+}
+.airdrop-verdict strong{
+  display:block;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,4vw,29px);
+  font-style:italic;
+  font-weight:400;
+  line-height:1.25;
+}
+.airdrop-reason{
+  margin:15px auto 0;
+  max-width:580px;
+  color:#765b3d;
+  font-size:10px;
+  line-height:1.5;
+}
+.airdrop-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+.airdrop-actions .primary,
+.airdrop-actions .airdrop-paper-btn{
+  min-width:210px;
+}
+.airdrop-paper-btn{
+  border:1px solid #9f8463;
+  background:rgba(41,19,15,.05);
+  color:#29130f;
+  padding:13px 17px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.airdrop-report-bottom{
+  display:block;
+  text-align:center;
+  border-top:2px solid #c69a41;
+  border-bottom:0;
+  font-size:10px;
+}
+
+@media(max-width:760px){
+  .status{text-align:left}
+  .airdrop-status-btn{margin-left:-8px}
+  .airdrop-overlay{padding:7px}
+  .airdrop-modal{max-height:calc(100dvh - 14px)}
+  .airdrop-report-top{
+    grid-template-columns:1fr auto;
+    padding:9px 10px;
+  }
+  .airdrop-report-top span:nth-child(2){display:none}
+  .airdrop-report-top span:last-child{text-align:right}
+  .airdrop-report-body{padding:22px 15px 20px}
+  .airdrop-check-row{font-size:9px}
+  .airdrop-actions{display:grid;grid-template-columns:1fr}
+  .airdrop-actions .primary,
+  .airdrop-actions .airdrop-paper-btn{width:100%;min-width:0}
+  .airdrop-report-bottom{font-size:8px;padding:9px}
+}
 .camera-status{
   min-width:150px;
   border-left:1px solid var(--line);
@@ -1659,7 +1927,10 @@ body.modal-open{overflow:hidden}
     </div>
     <div class="header-actions">
       <button class="leader-link" id="weeklyBtn">CUCK OF THE WEEK</button>
-      <div class="status"><small>AIRDROP STATUS</small><strong>PENDING</strong></div>
+      <button class="status airdrop-status-btn" id="airdropStatusBtn" type="button" aria-haspopup="dialog" aria-controls="airdropOverlay">
+        <small>AIRDROP STATUS</small>
+        <strong><span class="airdrop-status-dot" aria-hidden="true"></span>PENDING</strong>
+      </button>
     </div>
     <div class="camera-status" id="cameraStatus">
       <small>CAM 04 · SUPERVISOR</small>
@@ -1886,6 +2157,68 @@ body.modal-open{overflow:hidden}
       </div>
       <div id="weeklyList" class="weekly-list"></div>
       <p class="modal-note" id="weeklyNote">LIVE SHARED FACTORY RECORDS · RANKED BY FACTORY SCORE</p>
+    </div>
+  </div>
+
+  <div class="overlay airdrop-overlay hidden" id="airdropOverlay" role="dialog" aria-modal="true" aria-labelledby="airdropReportTitle">
+    <div class="airdrop-modal">
+      <div class="airdrop-report-top">
+        <span>ANSEM'S CUCK FACTORY</span>
+        <span>ELIGIBILITY FILE · AC-0096</span>
+        <button class="airdrop-report-close" id="airdropClose" type="button" aria-label="Close airdrop report">×</button>
+      </div>
+
+      <div class="airdrop-report-body">
+        <div class="airdrop-report-kicker" id="airdropReportTitle">AIRDROP ELIGIBILITY CHECK</div>
+
+        <div class="airdrop-loading" id="airdropLoading" aria-live="polite">
+          <div class="airdrop-check-row" data-airdrop-step>
+            <span class="airdrop-check-icon" aria-hidden="true"></span>
+            <span>CHECKING POSTING HISTORY</span>
+            <span class="airdrop-check-state">QUEUED</span>
+          </div>
+          <div class="airdrop-check-row" data-airdrop-step>
+            <span class="airdrop-check-icon" aria-hidden="true"></span>
+            <span>REVIEWING ENGAGEMENT</span>
+            <span class="airdrop-check-state">QUEUED</span>
+          </div>
+          <div class="airdrop-check-row" data-airdrop-step>
+            <span class="airdrop-check-icon" aria-hidden="true"></span>
+            <span>CROSS-CHECKING CONVICTION</span>
+            <span class="airdrop-check-state">QUEUED</span>
+          </div>
+          <div class="airdrop-check-row" data-airdrop-step>
+            <span class="airdrop-check-icon" aria-hidden="true"></span>
+            <span>CONSULTING MANAGEMENT</span>
+            <span class="airdrop-check-state">QUEUED</span>
+          </div>
+        </div>
+
+        <div class="airdrop-result" id="airdropResult">
+          <div class="airdrop-result-label">CURRENT ELIGIBILITY</div>
+          <div class="airdrop-percentage">96%<small>REVIEW STATUS: STILL PENDING</small></div>
+
+          <div class="airdrop-progress" aria-label="96 percent eligible">
+            <div class="airdrop-progress-fill"></div>
+          </div>
+
+          <div class="airdrop-verdict">
+            <small>MANAGEMENT VERDICT</small>
+            <strong id="airdropVerdict">Performance is encouraging. One additional successful shift is recommended.</strong>
+          </div>
+
+          <p class="airdrop-reason" id="airdropReason">
+            Final approval remains subject to supervisor review and continued posting activity.
+          </p>
+
+          <div class="airdrop-actions">
+            <button class="primary" id="airdropWorkBtn" type="button">WORK ANOTHER SHIFT</button>
+            <button class="airdrop-paper-btn" id="airdropReturnBtn" type="button">RETURN TO FACTORY</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="airdrop-report-bottom">ELIGIBILITY INCOMPLETE · CONTINUE POSTING · MANAGEMENT IS MONITORING</div>
     </div>
   </div>
 </div>
@@ -3159,6 +3492,125 @@ ${hostedGameUrl}
   });
   document.addEventListener("keydown",e=>{
     if(e.key==="Escape"&&!$("weeklyOverlay").classList.contains("hidden"))closeWeeklyOverlay();
+  });
+
+
+  const AIRDROP_REASONS=[
+    ["Performance is encouraging. One additional successful shift is recommended.",
+     "Final approval remains subject to supervisor review and continued posting activity."],
+    ["Your dedication has been noted. Eligibility remains just below the automatic approval threshold.",
+     "Management recommends another recorded shift before the file is reviewed again."],
+    ["Conviction levels are acceptable. Posting history remains under final review.",
+     "Current eligibility has been retained at 96%. Continued productivity is advised."],
+    ["Your file has been escalated to management.",
+     "No action is required except continued posting, improved accuracy and another completed shift."],
+    ["Supervisor approval is the only remaining dependency.",
+     "The supervisor has not approved anyone today. Management recommends trying again."]
+  ];
+  let airdropTimers=[];
+
+  function clearAirdropTimers(){
+    airdropTimers.forEach(clearTimeout);
+    airdropTimers=[];
+  }
+
+  function lockBodyForOverlay(overlay){
+    overlayScrollY=window.scrollY||window.pageYOffset||0;
+    document.body.classList.add("modal-open");
+    document.body.style.position="fixed";
+    document.body.style.top=`-${overlayScrollY}px`;
+    document.body.style.left="0";
+    document.body.style.right="0";
+    document.body.style.width="100%";
+    overlay.classList.remove("hidden");
+  }
+
+  function unlockBodyFromOverlay(overlay){
+    overlay.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+    document.body.style.position="";
+    document.body.style.top="";
+    document.body.style.left="";
+    document.body.style.right="";
+    document.body.style.width="";
+    window.scrollTo(0,overlayScrollY);
+  }
+
+  function resetAirdropReport(){
+    clearAirdropTimers();
+    const steps=[...document.querySelectorAll("[data-airdrop-step]")];
+    steps.forEach(step=>{
+      step.classList.remove("active","done");
+      step.querySelector(".airdrop-check-state").textContent="QUEUED";
+    });
+    $("airdropLoading").classList.remove("hidden");
+    $("airdropResult").classList.remove("revealed");
+    const copy=AIRDROP_REASONS[Math.floor(Math.random()*AIRDROP_REASONS.length)];
+    $("airdropVerdict").textContent=copy[0];
+    $("airdropReason").textContent=copy[1];
+
+    steps.forEach((step,index)=>{
+      const activate=setTimeout(()=>{
+        if(index>0){
+          const previous=steps[index-1];
+          previous.classList.remove("active");
+          previous.classList.add("done");
+          previous.querySelector(".airdrop-check-state").textContent="VERIFIED";
+        }
+        step.classList.add("active");
+        step.querySelector(".airdrop-check-state").textContent="REVIEWING";
+      },index*430);
+      airdropTimers.push(activate);
+    });
+
+    const reveal=setTimeout(()=>{
+      const finalStep=steps[steps.length-1];
+      finalStep.classList.remove("active");
+      finalStep.classList.add("done");
+      finalStep.querySelector(".airdrop-check-state").textContent="COMPLETE";
+      $("airdropLoading").classList.add("hidden");
+      $("airdropResult").classList.add("revealed");
+    },steps.length*430+230);
+    airdropTimers.push(reveal);
+  }
+
+  function openAirdropOverlay(){
+    lockBodyForOverlay($("airdropOverlay"));
+    resetAirdropReport();
+  }
+
+  function closeAirdropOverlay(){
+    clearAirdropTimers();
+    unlockBodyFromOverlay($("airdropOverlay"));
+  }
+
+  $("airdropStatusBtn").onclick=openAirdropOverlay;
+  $("airdropClose").onclick=closeAirdropOverlay;
+  $("airdropReturnBtn").onclick=closeAirdropOverlay;
+  $("airdropOverlay").addEventListener("click",e=>{
+    if(e.target===$("airdropOverlay"))closeAirdropOverlay();
+  });
+  $("airdropWorkBtn").onclick=()=>{
+    closeAirdropOverlay();
+    if(!$("resultPanel").classList.contains("hidden")){
+      $("againBtn").click();
+      return;
+    }
+    if(!$("gamePanel").classList.contains("hidden")){
+      $("restartBtn").click();
+      return;
+    }
+    if($("xName").value.trim()){
+      $("startBtn").click();
+    }else{
+      $("xName").focus();
+    }
+  };
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"&&!$("airdropOverlay").classList.contains("hidden")){
+      closeAirdropOverlay();
+    }
   });
 
   const savedName=localStorage.getItem("cuck-factory-x-name");
