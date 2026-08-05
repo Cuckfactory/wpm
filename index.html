@@ -2030,71 +2030,57 @@ body.modal-open{overflow:hidden}
 .racer.you .racer-factory-score{color:#c8aa77}
 
 
-/* Global rank and next-target motivation */
-.global-rank-panel{
+/* Rank and next-target information integrated into the certificate. */
+.result-cert-rank-strip{
   display:grid;
-  grid-template-columns:minmax(180px,.75fr) minmax(170px,.75fr) minmax(240px,1.25fr);
-  gap:1px;
-  margin-top:10px;
-  border:1px solid var(--line);
-  background:var(--line);
+  grid-template-columns:.9fr 1fr 1.25fr;
+  margin-top:14px;
+  border-top:1px solid #b99a66;
+  border-bottom:1px solid #b99a66;
+  background:rgba(143,33,27,.035);
 }
-.global-rank-panel > div{
+.result-cert-rank-cell{
   min-width:0;
-  padding:11px 13px;
-  background:linear-gradient(180deg,#160c09,#100806);
+  padding:11px 12px 10px;
+  border-right:1px solid #b99a66;
+  text-align:left;
 }
-.global-rank-head small,
-.global-rank-target small{
+.result-cert-rank-cell:last-child{
+  border-right:0;
+}
+.result-cert-rank-cell small{
   display:block;
-  color:var(--gold);
-  font-size:8px;
-  letter-spacing:.15em;
   margin-bottom:5px;
+  color:#765b3d;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.15em;
 }
-.global-rank-head strong{
+.result-cert-rank-cell strong{
   display:block;
-  color:var(--cream);
-  font-family:Georgia,serif;
-  font-size:24px;
-  line-height:1;
-}
-.global-rank-current{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:5px;
-}
-.global-rank-current span{
-  color:var(--cream);
-  font-size:13px;
-  font-weight:700;
-}
-.global-rank-current strong{
-  color:var(--gold);
-  font-size:11px;
-}
-.global-rank-target{
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-content:center;
-  column-gap:12px;
-}
-.global-rank-target small{
-  grid-column:1/-1;
-}
-.global-rank-target span{
-  min-width:0;
   overflow:hidden;
+  color:#29130f;
+  font-family:Georgia,serif;
+  font-size:22px;
+  line-height:1.05;
   text-overflow:ellipsis;
   white-space:nowrap;
-  color:#d8c4ad;
-  font-size:10px;
 }
-.global-rank-target strong{
-  color:#e8bc69;
-  font-size:10px;
+.result-cert-rank-cell span{
+  display:block;
+  margin-top:5px;
+  overflow:hidden;
+  color:#8f211b;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-overflow:ellipsis;
   white-space:nowrap;
+}
+.result-cert-next-target strong{
+  font-size:18px;
 }
 .ghost-global-rank{
   color:#b99a69;
@@ -2104,22 +2090,18 @@ body.modal-open{overflow:hidden}
   white-space:nowrap;
 }
 @media(max-width:820px){
-  .global-rank-panel{
-    grid-template-columns:1fr 1fr;
-  }
-  .global-rank-target{
-    grid-column:1/-1;
-  }
-}
-@media(max-width:520px){
-  .global-rank-panel{
+  .result-cert-rank-strip{
     grid-template-columns:1fr;
   }
-  .global-rank-target{
-    grid-column:auto;
+  .result-cert-rank-cell{
+    border-right:0;
+    border-bottom:1px solid #b99a66;
+    text-align:center;
+  }
+  .result-cert-rank-cell:last-child{
+    border-bottom:0;
   }
 }
-
 </style>
 </head>
 <body>
@@ -2304,6 +2286,26 @@ body.modal-open{overflow:hidden}
                 So close. One more post may be enough.
               </div>
 
+              <div class="result-cert-rank-strip" id="resultCertRankStrip">
+                <div class="result-cert-rank-cell">
+                  <small>THIS SHIFT</small>
+                  <strong id="resultCertShiftScore">0 PTS</strong>
+                  <span>CURRENT ATTEMPT</span>
+                </div>
+
+                <div class="result-cert-rank-cell">
+                  <small>EMPLOYEE BEST</small>
+                  <strong id="resultCertEmployeeRank">CALCULATING...</strong>
+                  <span id="resultCertEmployeeBest">0 PTS</span>
+                </div>
+
+                <div class="result-cert-rank-cell result-cert-next-target">
+                  <small>NEXT TARGET</small>
+                  <strong id="resultCertNextTarget">SEARCHING...</strong>
+                  <span id="resultCertNextGap"></span>
+                </div>
+              </div>
+
               <div class="result-cert-footnote">
                 MANAGEMENT FORECAST: SOON™
               </div>
@@ -2327,24 +2329,6 @@ body.modal-open{overflow:hidden}
             <div class="result-card"><small>BEST COMBO</small><strong id="resultCombo">0</strong></div>
             <div class="result-card"><small>FACTORY SCORE</small><strong id="resultFactoryScore">0</strong></div>
             <div class="result-card"><small>AIRDROP</small><strong id="resultAirdrop">0%</strong></div>
-          </div>
-
-          <div class="global-rank-panel" id="globalRankPanel">
-            <div class="global-rank-head">
-              <small>GLOBAL FACTORY POSITION</small>
-              <strong id="globalRankValue">CALCULATING...</strong>
-            </div>
-
-            <div class="global-rank-current">
-              <span id="globalRankPlayer">@worker</span>
-              <strong id="globalRankScore">0 PTS</strong>
-            </div>
-
-            <div class="global-rank-target" id="globalRankTarget">
-              <small>NEXT TARGET</small>
-              <span id="globalRankTargetName">SEARCHING FACTORY RECORDS...</span>
-              <strong id="globalRankTargetGap"></strong>
-            </div>
           </div>
 
           <div class="result-info-grid">
@@ -2381,7 +2365,7 @@ body.modal-open{overflow:hidden}
         <button class="close" id="weeklyClose">×</button>
       </div>
       <div id="weeklyList" class="weekly-list"></div>
-      <p class="modal-note" id="weeklyNote">LIVE SHARED FACTORY RECORDS · RANKED BY FACTORY SCORE</p>
+      <p class="modal-note" id="weeklyNote">RANKED SHIFTS · MULTIPLE RECORDS PER EMPLOYEE · FACTORY SCORE</p>
     </div>
   </div>
 
@@ -3095,12 +3079,12 @@ body.modal-open{overflow:hidden}
   }
 
   function setGlobalRankLoading(result){
-    $("globalRankValue").textContent="CALCULATING...";
-    $("globalRankPlayer").textContent=result?.name||playerName||"@worker";
-    $("globalRankScore").textContent=
+    $("resultCertShiftScore").textContent=
       `${Number(result?.factoryScore||0).toLocaleString()} PTS`;
-    $("globalRankTargetName").textContent="SEARCHING FACTORY RECORDS...";
-    $("globalRankTargetGap").textContent="";
+    $("resultCertEmployeeRank").textContent="CALCULATING...";
+    $("resultCertEmployeeBest").textContent="BEST SCORE PENDING";
+    $("resultCertNextTarget").textContent="SEARCHING...";
+    $("resultCertNextGap").textContent="";
   }
 
   async function loadPlayerRank(result){
@@ -3121,33 +3105,33 @@ body.modal-open{overflow:hidden}
       }
 
       if(!data.found){
-        $("globalRankValue").textContent="UNRANKED";
-        $("globalRankTargetName").textContent=
-          "COMPLETE A RECORDED SHIFT TO ENTER THE FACTORY RANKING";
-        $("globalRankTargetGap").textContent="";
+        $("resultCertEmployeeRank").textContent="UNRANKED";
+        $("resultCertEmployeeBest").textContent=
+          "COMPLETE A RECORDED SHIFT";
+        $("resultCertNextTarget").textContent="NO TARGET YET";
+        $("resultCertNextGap").textContent="";
         return;
       }
 
       result.globalRank=data.player.globalRank;
+      result.totalPlayers=data.totalPlayers;
       result.bestFactoryScore=data.player.bestFactoryScore;
       result.nextTarget=data.nextTarget||null;
 
-      $("globalRankValue").textContent=
+      $("resultCertEmployeeRank").textContent=
         `#${data.player.globalRank} OF ${data.totalPlayers}`;
-      $("globalRankPlayer").textContent=
-        `@${String(data.player.playerHandle).replace(/^@+/,"")}`;
-      $("globalRankScore").textContent=
-        `${Number(data.player.bestFactoryScore).toLocaleString()} PTS`;
+      $("resultCertEmployeeBest").textContent=
+        `${Number(data.player.bestFactoryScore).toLocaleString()} PTS PERSONAL BEST`;
 
       if(data.nextTarget){
-        $("globalRankTargetName").textContent=
+        $("resultCertNextTarget").textContent=
           `#${data.nextTarget.globalRank} @${String(data.nextTarget.playerHandle).replace(/^@+/,"")}`;
-        $("globalRankTargetGap").textContent=
+        $("resultCertNextGap").textContent=
           `${Number(data.nextTarget.pointsAhead).toLocaleString()} PTS AHEAD`;
       }else{
-        $("globalRankTargetName").textContent=
-          "YOU CURRENTLY CONTROL THE FACTORY";
-        $("globalRankTargetGap").textContent="RANK #1";
+        $("resultCertNextTarget").textContent=
+          "YOU CONTROL THE FACTORY";
+        $("resultCertNextGap").textContent="EMPLOYEE RANK #1";
       }
 
       localStorage.setItem(
@@ -3156,10 +3140,11 @@ body.modal-open{overflow:hidden}
       );
     }catch(error){
       console.warn("Player rank could not be loaded.",error);
-      $("globalRankValue").textContent="PENDING";
-      $("globalRankTargetName").textContent=
-        "FACTORY RANKING TEMPORARILY UNAVAILABLE";
-      $("globalRankTargetGap").textContent="";
+      $("resultCertEmployeeRank").textContent="PENDING";
+      $("resultCertEmployeeBest").textContent=
+        "FACTORY RANKING UNAVAILABLE";
+      $("resultCertNextTarget").textContent="TRY AGAIN LATER";
+      $("resultCertNextGap").textContent="";
     }
   }
 
@@ -3208,10 +3193,8 @@ body.modal-open{overflow:hidden}
         setReportStatus(`${data.factoryFile} RECORDED · SHARED LEADERBOARD UPDATED.`,"ready");
         setShiftSaveState("saved");
         localStorage.setItem("cuck-factory-last-score",JSON.stringify(result));
-        await Promise.all([
-          buildReportCanvas(),
-          loadPlayerRank(result)
-        ]);
+        await loadPlayerRank(result);
+        await buildReportCanvas();
         return true;
       }catch(error){
         lastError=error;
@@ -3695,16 +3678,101 @@ body.modal-open{overflow:hidden}
 
     // Near-miss message
     const msg=nearlyLineFor(m,m.place,carrot.distance);
-    const msgSize=fitText(ctx,msg,contentW-50,31,20,"Georgia, serif","400");
+    const msgSize=fitText(ctx,msg,contentW-50,27,18,"Georgia, serif","400");
     ctx.fillStyle="#8f211b";
     ctx.font=`italic ${msgSize}px Georgia, serif`;
-    ctx.fillText(msg,contentX+contentW/2,cardY+714);
+    ctx.fillText(msg,contentX+contentW/2,cardY+697);
 
+    // Rank strip integrated into the report itself.
+    const rankY=cardY+716;
+    const rankH=82;
+    const rankWidths=[contentW*.27,contentW*.31,contentW*.42];
+    const rankXs=[
+      contentX,
+      contentX+rankWidths[0],
+      contentX+rankWidths[0]+rankWidths[1]
+    ];
+
+    ctx.fillStyle="rgba(143,33,27,.035)";
+    ctx.fillRect(contentX,rankY,contentW,rankH);
     ctx.strokeStyle="#b99a66";
-    ctx.beginPath();ctx.moveTo(contentX,cardY+747);ctx.lineTo(contentX+contentW,cardY+747);ctx.stroke();
+    ctx.lineWidth=1.5;
+    ctx.strokeRect(contentX,rankY,contentW,rankH);
+
+    for(let i=1;i<3;i++){
+      ctx.beginPath();
+      ctx.moveTo(rankXs[i],rankY);
+      ctx.lineTo(rankXs[i],rankY+rankH);
+      ctx.stroke();
+    }
+
+    const rankCells=[
+      {
+        label:"THIS SHIFT",
+        main:`${Number(m.factoryScore).toLocaleString()} PTS`,
+        sub:"CURRENT ATTEMPT"
+      },
+      {
+        label:"EMPLOYEE BEST",
+        main:m.globalRank
+          ? `#${m.globalRank} OF ${m.totalPlayers||""}`.trim()
+          : "CALCULATING...",
+        sub:m.bestFactoryScore
+          ? `${Number(m.bestFactoryScore).toLocaleString()} PTS PERSONAL BEST`
+          : "BEST SCORE PENDING"
+      },
+      {
+        label:"NEXT TARGET",
+        main:m.nextTarget
+          ? `#${m.nextTarget.globalRank} @${String(m.nextTarget.playerHandle).replace(/^@+/,"")}`
+          : (m.globalRank===1 ? "YOU CONTROL THE FACTORY" : "SEARCHING..."),
+        sub:m.nextTarget
+          ? `${Number(m.nextTarget.pointsAhead).toLocaleString()} PTS AHEAD`
+          : (m.globalRank===1 ? "EMPLOYEE RANK #1" : "")
+      }
+    ];
+
+    let runningX=contentX;
+    rankCells.forEach((cell,index)=>{
+      const width=rankWidths[index];
+      const cx=runningX+width/2;
+
+      ctx.fillStyle="#765b3d";
+      ctx.font="700 10px ui-monospace, monospace";
+      ctx.fillText(cell.label,cx,rankY+18);
+
+      const mainSize=fitText(
+        ctx,
+        cell.main,
+        width-22,
+        index===2 ? 18 : 22,
+        13,
+        "Georgia, serif",
+        "700"
+      );
+      ctx.fillStyle="#29130f";
+      ctx.font=`700 ${mainSize}px Georgia, serif`;
+      ctx.fillText(cell.main,cx,rankY+45);
+
+      const subSize=fitText(
+        ctx,
+        cell.sub,
+        width-18,
+        10,
+        8,
+        "ui-monospace, monospace",
+        "700"
+      );
+      ctx.fillStyle="#8f211b";
+      ctx.font=`700 ${subSize}px ui-monospace, monospace`;
+      ctx.fillText(cell.sub,cx,rankY+67);
+
+      runningX+=width;
+    });
+
     ctx.fillStyle="#765b3d";
-    ctx.font="700 12px ui-monospace, monospace";
-    ctx.fillText("MANAGEMENT FORECAST: SOON™",contentX+contentW/2,cardY+779);
+    ctx.font="700 10px ui-monospace, monospace";
+    ctx.fillText("MANAGEMENT FORECAST: SOON™",contentX+contentW/2,cardY+812);
 
     // Footer
     ctx.fillStyle="#f4e7c5";
