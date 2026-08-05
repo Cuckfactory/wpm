@@ -263,9 +263,9 @@ export default {
     /*
      * GET THREE RANDOM RACE OPPONENTS
      *
-     * This selects three different players from the D1 database.
-     * For each selected player, their most recent valid run is used.
-     * It does not select the top three.
+     * Selects three different real players from the D1 database.
+     * Each ghost uses that player's latest valid run.
+     * globalRank is based on each player's best Factory Score.
      */
     if (
       url.pathname === "/api/race-opponents" &&
@@ -288,6 +288,35 @@ export default {
 
         const result = await env.DB
           .prepare(`
+            WITH best_scores AS (
+              SELECT
+                player_handle,
+                MAX(factory_score) AS best_factory_score
+              FROM scores
+              WHERE wpm > 0
+                AND accuracy > 0
+                AND factory_score > 0
+              GROUP BY player_handle
+            ),
+            ranked_players AS (
+              SELECT
+                player_handle,
+                best_factory_score,
+                ROW_NUMBER() OVER (
+                  ORDER BY best_factory_score DESC, player_handle ASC
+                ) AS global_rank
+              FROM best_scores
+            ),
+            latest_runs AS (
+              SELECT
+                player_handle,
+                MAX(id) AS latest_id
+              FROM scores
+              WHERE wpm > 0
+                AND accuracy > 0
+                AND factory_score > 0
+              GROUP BY player_handle
+            )
             SELECT
               s.id,
               s.player_handle,
@@ -297,28 +326,25 @@ export default {
               s.best_combo,
               s.factory_score,
               s.carrot_distance,
-              s.created_at
-            FROM scores AS s
-            INNER JOIN (
-              SELECT
-                player_handle,
-                MAX(id) AS latest_id
-              FROM scores
-              WHERE wpm > 0
-                AND accuracy > 0
-                AND factory_score > 0
-              GROUP BY player_handle
-            ) AS latest
-              ON s.id = latest.latest_id
+              s.created_at,
+              ranked_players.global_rank,
+              ranked_players.best_factory_score
+            FROM latest_runs
+            INNER JOIN scores AS s
+              ON s.id = latest_runs.latest_id
+            INNER JOIN ranked_players
+              ON ranked_players.player_handle = s.player_handle
             ORDER BY RANDOM()
             LIMIT ?
           `)
           .bind(limit)
           .all();
 
-        const opponents = (result.results ?? []).map(
-          (score) => scoreToApiRecord(score)
-        );
+        const opponents = (result.results ?? []).map((score) => ({
+          ...scoreToApiRecord(score),
+          globalRank: Number(score.global_rank),
+          bestFactoryScore: Number(score.best_factory_score)
+        }));
 
         return jsonResponse({
           status: "ok",
@@ -329,6 +355,128 @@ export default {
           {
             status: "error",
             message: "Race opponents could not be loaded.",
+            detail: String(error?.message ?? error)
+          },
+          500
+        );
+      }
+    }
+
+    /*
+     * GET A PLAYER'S GLOBAL POSITION AND NEXT TARGET
+     *
+     * Ranking uses one best Factory Score per X handle.
+     * The normal top-10 leaderboard remains unchanged during testing.
+     */
+    if (
+      url.pathname === "/api/player-rank" &&
+      request.method === "GET"
+    ) {
+      try {
+        const playerHandle = cleanHandle(
+          url.searchParams.get("handle")
+        );
+
+        if (!playerHandle) {
+          return jsonResponse(
+            {
+              status: "error",
+              message: "A valid player handle is required."
+            },
+            400
+          );
+        }
+
+        const ranked = await env.DB
+          .prepare(`
+            WITH best_scores AS (
+              SELECT
+                player_handle,
+                MAX(factory_score) AS best_factory_score
+              FROM scores
+              WHERE wpm > 0
+                AND accuracy > 0
+                AND factory_score > 0
+              GROUP BY player_handle
+            ),
+            ranked_players AS (
+              SELECT
+                player_handle,
+                best_factory_score,
+                ROW_NUMBER() OVER (
+                  ORDER BY best_factory_score DESC, player_handle ASC
+                ) AS global_rank
+              FROM best_scores
+            )
+            SELECT
+              player_handle,
+              best_factory_score,
+              global_rank
+            FROM ranked_players
+            ORDER BY global_rank ASC
+          `)
+          .all();
+
+        const rows = ranked.results ?? [];
+        const playerIndex = rows.findIndex(
+          (row) =>
+            String(row.player_handle).toLowerCase() ===
+            playerHandle.toLowerCase()
+        );
+
+        if (playerIndex === -1) {
+          return jsonResponse(
+            {
+              status: "ok",
+              found: false,
+              playerHandle
+            }
+          );
+        }
+
+        const player = rows[playerIndex];
+        const nextTarget = playerIndex > 0
+          ? rows[playerIndex - 1]
+          : null;
+        const nearestBehind = playerIndex < rows.length - 1
+          ? rows[playerIndex + 1]
+          : null;
+
+        return jsonResponse({
+          status: "ok",
+          found: true,
+          totalPlayers: rows.length,
+          player: {
+            playerHandle: player.player_handle,
+            globalRank: Number(player.global_rank),
+            bestFactoryScore: Number(player.best_factory_score)
+          },
+          nextTarget: nextTarget
+            ? {
+                playerHandle: nextTarget.player_handle,
+                globalRank: Number(nextTarget.global_rank),
+                bestFactoryScore: Number(nextTarget.best_factory_score),
+                pointsAhead:
+                  Number(nextTarget.best_factory_score) -
+                  Number(player.best_factory_score)
+              }
+            : null,
+          nearestBehind: nearestBehind
+            ? {
+                playerHandle: nearestBehind.player_handle,
+                globalRank: Number(nearestBehind.global_rank),
+                bestFactoryScore: Number(nearestBehind.best_factory_score),
+                pointsBehind:
+                  Number(player.best_factory_score) -
+                  Number(nearestBehind.best_factory_score)
+              }
+            : null
+        });
+      } catch (error) {
+        return jsonResponse(
+          {
+            status: "error",
+            message: "Player rank could not be loaded.",
             detail: String(error?.message ?? error)
           },
           500
