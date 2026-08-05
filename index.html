@@ -2029,6 +2029,97 @@ body.modal-open{overflow:hidden}
 }
 .racer.you .racer-factory-score{color:#c8aa77}
 
+
+/* Global rank and next-target motivation */
+.global-rank-panel{
+  display:grid;
+  grid-template-columns:minmax(180px,.75fr) minmax(170px,.75fr) minmax(240px,1.25fr);
+  gap:1px;
+  margin-top:10px;
+  border:1px solid var(--line);
+  background:var(--line);
+}
+.global-rank-panel > div{
+  min-width:0;
+  padding:11px 13px;
+  background:linear-gradient(180deg,#160c09,#100806);
+}
+.global-rank-head small,
+.global-rank-target small{
+  display:block;
+  color:var(--gold);
+  font-size:8px;
+  letter-spacing:.15em;
+  margin-bottom:5px;
+}
+.global-rank-head strong{
+  display:block;
+  color:var(--cream);
+  font-family:Georgia,serif;
+  font-size:24px;
+  line-height:1;
+}
+.global-rank-current{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+}
+.global-rank-current span{
+  color:var(--cream);
+  font-size:13px;
+  font-weight:700;
+}
+.global-rank-current strong{
+  color:var(--gold);
+  font-size:11px;
+}
+.global-rank-target{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-content:center;
+  column-gap:12px;
+}
+.global-rank-target small{
+  grid-column:1/-1;
+}
+.global-rank-target span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#d8c4ad;
+  font-size:10px;
+}
+.global-rank-target strong{
+  color:#e8bc69;
+  font-size:10px;
+  white-space:nowrap;
+}
+.ghost-global-rank{
+  color:#b99a69;
+  font-size:8px;
+  font-weight:400;
+  letter-spacing:.06em;
+  white-space:nowrap;
+}
+@media(max-width:820px){
+  .global-rank-panel{
+    grid-template-columns:1fr 1fr;
+  }
+  .global-rank-target{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:520px){
+  .global-rank-panel{
+    grid-template-columns:1fr;
+  }
+  .global-rank-target{
+    grid-column:auto;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2236,6 +2327,24 @@ body.modal-open{overflow:hidden}
             <div class="result-card"><small>BEST COMBO</small><strong id="resultCombo">0</strong></div>
             <div class="result-card"><small>FACTORY SCORE</small><strong id="resultFactoryScore">0</strong></div>
             <div class="result-card"><small>AIRDROP</small><strong id="resultAirdrop">0%</strong></div>
+          </div>
+
+          <div class="global-rank-panel" id="globalRankPanel">
+            <div class="global-rank-head">
+              <small>GLOBAL FACTORY POSITION</small>
+              <strong id="globalRankValue">CALCULATING...</strong>
+            </div>
+
+            <div class="global-rank-current">
+              <span id="globalRankPlayer">@worker</span>
+              <strong id="globalRankScore">0 PTS</strong>
+            </div>
+
+            <div class="global-rank-target" id="globalRankTarget">
+              <small>NEXT TARGET</small>
+              <span id="globalRankTargetName">SEARCHING FACTORY RECORDS...</span>
+              <strong id="globalRankTargetGap"></strong>
+            </div>
           </div>
 
           <div class="result-info-grid">
@@ -2473,6 +2582,8 @@ body.modal-open{overflow:hidden}
       accuracy,
       bestCombo,
       factoryScore,
+      globalRank:Number(record.globalRank)||null,
+      bestFactoryScore:Number(record.bestFactoryScore)||factoryScore,
       jitter:.96+Math.random()*.08,
       startDelay:.15+Math.random()*.85,
       phase:Math.random()*Math.PI*2,
@@ -2618,6 +2729,7 @@ body.modal-open{overflow:hidden}
           name:g.name,
           wpm:g.wpm,
           factoryScore:liveGhostFactoryScore(g,rawProgress),
+          globalRank:g.globalRank,
           progress:liveRaceProgress(rawProgress,g.accuracy)
         };
       })
@@ -2630,7 +2742,7 @@ body.modal-open{overflow:hidden}
     $("racers").innerHTML=list.map((r,i)=>`
       <div class="racer ${r.you?'you':''}">
         <div class="racer-head">
-          <span class="name">${i+1}. ${r.you?'YOU':esc(r.name)}</span>
+          <span class="name">${i+1}. ${r.you?'YOU':esc(r.name)}${!r.you&&r.globalRank?` <span class="ghost-global-rank">#${r.globalRank}</span>`:''}</span>
           <span class="racer-stat">
             <span class="racer-wpm">${Math.round(r.wpm)} WPM</span>
             <span class="racer-factory-score">${Math.round(r.factoryScore).toLocaleString()} PTS</span>
@@ -2982,6 +3094,75 @@ body.modal-open{overflow:hidden}
     return new Promise(resolve=>setTimeout(resolve,ms));
   }
 
+  function setGlobalRankLoading(result){
+    $("globalRankValue").textContent="CALCULATING...";
+    $("globalRankPlayer").textContent=result?.name||playerName||"@worker";
+    $("globalRankScore").textContent=
+      `${Number(result?.factoryScore||0).toLocaleString()} PTS`;
+    $("globalRankTargetName").textContent="SEARCHING FACTORY RECORDS...";
+    $("globalRankTargetGap").textContent="";
+  }
+
+  async function loadPlayerRank(result){
+    if(!result)return;
+
+    setGlobalRankLoading(result);
+
+    try{
+      const handle=String(result.name||"").replace(/^@+/,"");
+      const response=await fetch(
+        `/api/player-rank?handle=${encodeURIComponent(handle)}`,
+        {headers:{"accept":"application/json"}}
+      );
+      const data=await response.json();
+
+      if(!response.ok||data.status!=="ok"){
+        throw new Error(data.message||"Player rank unavailable.");
+      }
+
+      if(!data.found){
+        $("globalRankValue").textContent="UNRANKED";
+        $("globalRankTargetName").textContent=
+          "COMPLETE A RECORDED SHIFT TO ENTER THE FACTORY RANKING";
+        $("globalRankTargetGap").textContent="";
+        return;
+      }
+
+      result.globalRank=data.player.globalRank;
+      result.bestFactoryScore=data.player.bestFactoryScore;
+      result.nextTarget=data.nextTarget||null;
+
+      $("globalRankValue").textContent=
+        `#${data.player.globalRank} OF ${data.totalPlayers}`;
+      $("globalRankPlayer").textContent=
+        `@${String(data.player.playerHandle).replace(/^@+/,"")}`;
+      $("globalRankScore").textContent=
+        `${Number(data.player.bestFactoryScore).toLocaleString()} PTS`;
+
+      if(data.nextTarget){
+        $("globalRankTargetName").textContent=
+          `#${data.nextTarget.globalRank} @${String(data.nextTarget.playerHandle).replace(/^@+/,"")}`;
+        $("globalRankTargetGap").textContent=
+          `${Number(data.nextTarget.pointsAhead).toLocaleString()} PTS AHEAD`;
+      }else{
+        $("globalRankTargetName").textContent=
+          "YOU CURRENTLY CONTROL THE FACTORY";
+        $("globalRankTargetGap").textContent="RANK #1";
+      }
+
+      localStorage.setItem(
+        "cuck-factory-last-score",
+        JSON.stringify(result)
+      );
+    }catch(error){
+      console.warn("Player rank could not be loaded.",error);
+      $("globalRankValue").textContent="PENDING";
+      $("globalRankTargetName").textContent=
+        "FACTORY RANKING TEMPORARILY UNAVAILABLE";
+      $("globalRankTargetGap").textContent="";
+    }
+  }
+
   async function submitCompletedShift(result,carrot){
     if(!result)return false;
     if(result.savedOnline){
@@ -3027,7 +3208,10 @@ body.modal-open{overflow:hidden}
         setReportStatus(`${data.factoryFile} RECORDED · SHARED LEADERBOARD UPDATED.`,"ready");
         setShiftSaveState("saved");
         localStorage.setItem("cuck-factory-last-score",JSON.stringify(result));
-        await buildReportCanvas();
+        await Promise.all([
+          buildReportCanvas(),
+          loadPlayerRank(result)
+        ]);
         return true;
       }catch(error){
         lastError=error;
@@ -3138,6 +3322,7 @@ body.modal-open{overflow:hidden}
       "unimpressed"
     ];
     $("managementVerdict").textContent=verdictFor(m,place);
+    setGlobalRankLoading(lastResult);
     $("sharePreviewName").textContent=playerName;
     $("sharePreviewWpm").textContent=m.wpm+" WPM";
     $("sharePreviewAccuracy").textContent=m.accuracy.toFixed(1)+"% accuracy";
