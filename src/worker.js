@@ -26,6 +26,27 @@ function validNumber(value, min, max) {
   return Math.min(max, Math.max(min, number));
 }
 
+function scoreToApiRecord(score, rank = null) {
+  const record = {
+    factoryFileNumber: Number(score.id),
+    factoryFile: `CF-${String(score.id).padStart(6, "0")}`,
+    playerHandle: score.player_handle,
+    wpm: Number(score.wpm),
+    accuracy: Number(score.accuracy),
+    rejected: Number(score.rejected),
+    bestCombo: Number(score.best_combo),
+    factoryScore: Number(score.factory_score),
+    carrotDistance: Number(score.carrot_distance),
+    createdAt: score.created_at
+  };
+
+  if (rank !== null) {
+    record.rank = rank;
+  }
+
+  return record;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -33,7 +54,10 @@ export default {
     /*
      * HEALTH CHECK
      */
-    if (url.pathname === "/api/health") {
+    if (
+      url.pathname === "/api/health" &&
+      request.method === "GET"
+    ) {
       try {
         const result = await env.DB
           .prepare("SELECT COUNT(*) AS score_count FROM scores")
@@ -73,9 +97,19 @@ export default {
         const accuracy = validNumber(body.accuracy, 0, 100);
         const rejected = validNumber(body.rejected, 0, 10000);
         const bestCombo = validNumber(body.bestCombo, 0, 10000);
-        const factoryScore = validNumber(body.factoryScore, 0, 100000000);
-        const carrotDistance = validNumber(body.carrotDistance, 0.1, 99.9);
-        const shiftId = String(body.shiftId ?? "").trim().slice(0, 100);
+        const factoryScore = validNumber(
+          body.factoryScore,
+          0,
+          100000000
+        );
+        const carrotDistance = validNumber(
+          body.carrotDistance,
+          0.1,
+          99.9
+        );
+        const shiftId = String(body.shiftId ?? "")
+          .trim()
+          .slice(0, 100);
 
         if (!playerHandle) {
           return jsonResponse(
@@ -205,19 +239,9 @@ export default {
           `)
           .all();
 
-        const leaderboard = (result.results ?? []).map((score, index) => ({
-          rank: index + 1,
-          factoryFileNumber: Number(score.id),
-          factoryFile: `CF-${String(score.id).padStart(6, "0")}`,
-          playerHandle: score.player_handle,
-          wpm: Number(score.wpm),
-          accuracy: Number(score.accuracy),
-          rejected: Number(score.rejected),
-          bestCombo: Number(score.best_combo),
-          factoryScore: Number(score.factory_score),
-          carrotDistance: Number(score.carrot_distance),
-          createdAt: score.created_at
-        }));
+        const leaderboard = (result.results ?? []).map(
+          (score, index) => scoreToApiRecord(score, index + 1)
+        );
 
         return jsonResponse({
           status: "ok",
@@ -237,8 +261,126 @@ export default {
     }
 
     /*
-     * SERVE THE EXISTING GAME
+     * GET THREE RANDOM RACE OPPONENTS
+     *
+     * This selects three different players from the D1 database.
+     * For each selected player, their most recent valid run is used.
+     * It does not select the top three.
      */
-    return env.ASSETS.fetch(request);
+    if (
+      url.pathname === "/api/race-opponents" &&
+      request.method === "GET"
+    ) {
+      try {
+        const requestedLimit = Number(
+          url.searchParams.get("limit") ?? 3
+        );
+
+        const limit = Math.min(
+          3,
+          Math.max(
+            1,
+            Number.isFinite(requestedLimit)
+              ? Math.round(requestedLimit)
+              : 3
+          )
+        );
+
+        const result = await env.DB
+          .prepare(`
+            SELECT
+              s.id,
+              s.player_handle,
+              s.wpm,
+              s.accuracy,
+              s.rejected,
+              s.best_combo,
+              s.factory_score,
+              s.carrot_distance,
+              s.created_at
+            FROM scores AS s
+            INNER JOIN (
+              SELECT
+                player_handle,
+                MAX(id) AS latest_id
+              FROM scores
+              WHERE wpm > 0
+                AND accuracy > 0
+                AND factory_score > 0
+              GROUP BY player_handle
+            ) AS latest
+              ON s.id = latest.latest_id
+            ORDER BY RANDOM()
+            LIMIT ?
+          `)
+          .bind(limit)
+          .all();
+
+        const opponents = (result.results ?? []).map(
+          (score) => scoreToApiRecord(score)
+        );
+
+        return jsonResponse({
+          status: "ok",
+          opponents
+        });
+      } catch (error) {
+        return jsonResponse(
+          {
+            status: "error",
+            message: "Race opponents could not be loaded.",
+            detail: String(error?.message ?? error)
+          },
+          500
+        );
+      }
+    }
+
+    /*
+     * BROWSERS REQUEST THIS AUTOMATICALLY.
+     * Returning 204 avoids an unnecessary favicon error in the logs.
+     */
+    if (
+      url.pathname === "/favicon.ico" &&
+      request.method === "GET"
+    ) {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "cache-control": "public, max-age=86400"
+        }
+      });
+    }
+
+    /*
+     * UNKNOWN API ROUTE
+     */
+    if (url.pathname.startsWith("/api/")) {
+      return jsonResponse(
+        {
+          status: "error",
+          message: "API route not found."
+        },
+        404
+      );
+    }
+
+    /*
+     * SERVE THE EXISTING GAME WHEN AN ASSETS BINDING IS AVAILABLE.
+     *
+     * Some Cloudflare static-asset setups serve files before this Worker
+     * runs and therefore do not expose env.ASSETS. The safety check prevents
+     * the previous 'undefined (reading fetch)' runtime error.
+     */
+    if (env.ASSETS && typeof env.ASSETS.fetch === "function") {
+      return env.ASSETS.fetch(request);
+    }
+
+    return new Response("Not found", {
+      status: 404,
+      headers: {
+        "content-type": "text/plain; charset=utf-8"
+      }
+    });
   }
 };
