@@ -2102,6 +2102,69 @@ body.modal-open{overflow:hidden}
     border-bottom:0;
   }
 }
+
+/* Game 2-style loyalty credit inside the Game 1 certificate */
+.result-cert-footnote.result-cert-loyalty-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  width:100%;
+  max-width:700px;
+  min-height:42px;
+  margin:9px auto 0;
+  padding:8px 12px 6px;
+  border-top:1px solid #b99a66;
+  border-bottom:1px solid #b99a66;
+  color:#765b3d;
+  text-align:left;
+  letter-spacing:0;
+}
+
+.result-cert-loyalty-left{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  min-width:0;
+}
+
+.result-cert-loyalty-left span{
+  font-family:var(--mono);
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.16em;
+  white-space:nowrap;
+}
+
+.result-cert-loyalty-left strong{
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:28px;
+  line-height:1;
+}
+
+.result-cert-loyalty-row em{
+  color:#765b3d;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:9px;
+  font-weight:400;
+  font-style:italic;
+  letter-spacing:0;
+  text-align:right;
+}
+
+@media(max-width:600px){
+  .result-cert-footnote.result-cert-loyalty-row{
+    gap:10px;
+    padding-left:8px;
+    padding-right:8px;
+  }
+  .result-cert-loyalty-left{gap:9px}
+  .result-cert-loyalty-left span{font-size:7px}
+  .result-cert-loyalty-left strong{font-size:24px}
+  .result-cert-loyalty-row em{font-size:7px}
+}
+
 </style>
 </head>
 <body>
@@ -2306,8 +2369,12 @@ body.modal-open{overflow:hidden}
                 </div>
               </div>
 
-              <div class="result-cert-footnote">
-                MANAGEMENT FORECAST: SOON™
+              <div class="result-cert-footnote result-cert-loyalty-row">
+                <div class="result-cert-loyalty-left">
+                  <span>LOYALTY CREDIT</span>
+                  <strong>+1</strong>
+                </div>
+                <em>Visible value awarded. Material value pending.</em>
               </div>
             </div>
 
@@ -3770,9 +3837,39 @@ body.modal-open{overflow:hidden}
       runningX+=width;
     });
 
+    // Loyalty credit row
+    const loyaltyY=cardY+806;
+    ctx.strokeStyle="#b99a66";
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(contentX,loyaltyY);
+    ctx.lineTo(contentX+contentW,loyaltyY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(contentX,loyaltyY+42);
+    ctx.lineTo(contentX+contentW,loyaltyY+42);
+    ctx.stroke();
+
+    ctx.textAlign="left";
     ctx.fillStyle="#765b3d";
     ctx.font="700 10px ui-monospace, monospace";
-    ctx.fillText("MANAGEMENT FORECAST: SOON™",contentX+contentW/2,cardY+812);
+    ctx.fillText("LOYALTY CREDIT",contentX+14,loyaltyY+25);
+
+    ctx.fillStyle="#8f211b";
+    ctx.font="700 29px Georgia, serif";
+    ctx.fillText("+1",contentX+145,loyaltyY+29);
+
+    ctx.textAlign="right";
+    ctx.fillStyle="#765b3d";
+    ctx.font="italic 10px Georgia, serif";
+    ctx.fillText(
+      "Visible value awarded. Material value pending.",
+      contentX+contentW-14,
+      loyaltyY+25
+    );
+
+    ctx.textAlign="center";
 
     // Footer
     ctx.fillStyle="#f4e7c5";
