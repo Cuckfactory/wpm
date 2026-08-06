@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cuck Factory — Organic Community Growth</title>
+<style>
+:root{--bg:#0a0605;--panel:#120b09;--panel-2:#18100d;--line:#4a3024;--line-soft:#2b1d18;--text:#eee2ce;--muted:#988173;--accent:#a92f27;--amber:#cf9c48;--amber-soft:#e8c98e;--good:#8eaf70;--bad:#df6757;--paper:#efe4c7;--paper-line:#b99a66;--paper-text:#29130f;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}body{padding:16px;font-family:var(--mono);background:radial-gradient(circle at 50% -20%,rgba(119,50,31,.22),transparent 34%),linear-gradient(#0b0706,#070403)}body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.16;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px);mix-blend-mode:screen}button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}.app{width:min(1420px,100%);margin:auto;display:grid;gap:12px}.frame{border:1px solid var(--line);background:linear-gradient(180deg,rgba(25,15,12,.98),rgba(13,8,6,.98));box-shadow:inset 0 0 40px rgba(0,0,0,.35)}
+.header{display:grid;grid-template-columns:1.2fr auto auto;gap:22px;align-items:center;padding:18px 22px}.brand-kicker{color:var(--amber);font-size:10px;letter-spacing:.25em;margin-bottom:5px}.brand-title{font-family:Georgia,"Times New Roman",serif;font-size:clamp(30px,4vw,58px);line-height:.95}.brand p{margin:9px 0 0;color:var(--muted);font-size:11px;letter-spacing:.08em}.header-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.department-link{border:0;border-bottom:1px solid var(--amber-soft);background:transparent;color:var(--text);font-weight:700;letter-spacing:.12em;padding:7px 0}.status{text-align:right}.status small{display:block;color:var(--muted);letter-spacing:.13em;font-size:10px}.status strong{display:block;color:var(--amber);font-size:15px;margin-top:4px}.camera-status{min-width:155px;border-left:1px solid var(--line);padding-left:18px;text-align:right}.camera-status small{display:block;color:var(--muted);letter-spacing:.15em}.rec-line{margin-top:5px;color:#75514a;font-weight:700}.rec-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:#4b2926}.recording .rec-line{color:var(--bad)}.recording .rec-dot{background:#e24a3e;box-shadow:0 0 12px rgba(226,74,62,.75)}
+.primary{border:1px solid #d1a15d;background:linear-gradient(#ad382f,#792019);color:#fff0d7;font-weight:800;padding:14px 20px;letter-spacing:.07em}.secondary{border:1px solid var(--line);background:var(--panel-2);color:var(--text);padding:12px 16px}
+.start-panel{padding:22px}.intro-card{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:18px;border:1px solid var(--line);background:#0b0705;padding:22px}.intro-copy h1{margin:4px 0 12px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(30px,4.5vw,56px);line-height:1}.intro-copy .eyebrow{color:var(--amber);font-size:10px;letter-spacing:.18em}.intro-copy p{color:#cdbba2;line-height:1.6;max-width:760px}.intro-copy strong{color:var(--amber-soft)}.intro-notice{margin:18px 0;padding:14px;border-left:3px solid var(--amber);background:rgba(45,24,18,.35);color:#d7c2a8;font-family:Georgia,"Times New Roman",serif;font-style:italic}.start-actions{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:18px}.field label{display:block;font-size:10px;color:var(--muted);margin-bottom:7px;letter-spacing:.13em}.field input{width:100%;padding:14px;border:1px solid var(--line);background:#080504;color:var(--text);outline:none}.intro-portrait{position:relative;min-height:420px;border:1px solid var(--line);overflow:hidden;background:radial-gradient(circle at 50% 25%,rgba(207,156,72,.18),transparent 30%),#080504}.intro-portrait img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}.intro-portrait::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px);opacity:.42;mix-blend-mode:screen}.intro-label{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;padding:9px 11px;border:1px solid rgba(232,201,142,.5);background:rgba(16,8,7,.83);font-size:10px;letter-spacing:.12em;text-align:center}
+.game-panel{padding:12px}.game-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}.sidebar{display:grid;gap:12px}.thread-panel,.progress-panel,.game-main{border:1px solid var(--line);background:rgba(12,7,5,.96)}.thread-panel{padding:12px}.panel-title{font-size:11px;letter-spacing:.15em;color:var(--amber);margin-bottom:10px}.panel-sub{color:var(--muted);font-size:9px;margin-top:4px;letter-spacing:.07em;line-height:1.3}.thread-portrait{position:relative;aspect-ratio:4/3;border:1px solid var(--line);background:#020101;overflow:hidden;margin-top:12px}.thread-portrait img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}.thread-portrait::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 22%,rgba(0,0,0,.12)),repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px);mix-blend-mode:screen;opacity:.42}.thread-state{margin-top:11px;color:var(--muted);font-size:9px;letter-spacing:.12em}.thread-message{margin-top:10px;border-left:2px solid var(--amber);padding:10px 11px;min-height:70px;color:#d6c2a5;font-family:Georgia,"Times New Roman",serif;font-style:italic;line-height:1.35}.progress-panel{padding:13px}.progress-row{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:#d9c6af;padding:8px 0;border-bottom:1px solid var(--line-soft)}.progress-row:last-child{border-bottom:0}.progress-row strong{color:var(--amber)}.airdrop-meter{margin-top:12px}.airdrop-meter-head{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;letter-spacing:.12em}.airdrop-track{height:9px;margin-top:8px;border:1px solid #3b281f;background:#080504;overflow:hidden}.airdrop-fill{height:100%;width:97.00%;background:linear-gradient(90deg,var(--accent),var(--amber));transition:width .4s ease}.airdrop-note{margin-top:7px;color:#9f846c;font-size:8px;line-height:1.4}
+.game-main{padding:18px;display:grid;gap:14px}.assignment-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.assignment-kicker{color:var(--muted);font-size:10px;letter-spacing:.15em}.assignment-title{font-family:Georgia,"Times New Roman",serif;font-size:30px;margin-top:4px}.assignment-actions{display:flex;align-items:center;gap:12px}.round-count{color:var(--muted);font-size:11px;white-space:nowrap}.restart{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 12px;border:1px solid #b88743;background:linear-gradient(180deg,#4b2d1b,#342016);color:#f1d8a5;font-size:9px;font-weight:700;letter-spacing:.13em;white-space:nowrap}.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);background:#0b0705}.hud-item{padding:14px;border-right:1px solid var(--line);min-width:0}.hud-item:last-child{border-right:0}.hud-item small{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em;margin-bottom:7px}.hud-item strong{display:block;font-family:Georgia,"Times New Roman",serif;font-size:clamp(25px,2.2vw,42px);font-weight:400;line-height:1;letter-spacing:-.035em;white-space:nowrap;overflow:hidden}.hud-item.warning strong{color:var(--bad)}
+.x-card{background:#000;border:1px solid #2f3336;border-radius:14px;padding:16px;color:#e7e9ea;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}.x-head{display:flex;gap:11px;align-items:flex-start}.x-avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:radial-gradient(circle at 35% 30%,#d8aa62,#7b3c24 55%,#1b0b07);font-weight:900;color:#fff}.x-name-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.x-name{font-weight:700}.x-verified{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#1d9bf0;color:#fff;font-size:11px;font-weight:900}.x-handle{color:#71767b}.x-more{margin-left:auto;color:#71767b;font-size:20px}.x-text{font-size:clamp(19px,2.2vw,27px);line-height:1.35;margin:14px 0 18px;white-space:pre-wrap}.x-meta{color:#71767b;font-size:14px;padding-bottom:12px;border-bottom:1px solid #2f3336}.x-stats{display:flex;gap:18px;padding-top:12px;color:#71767b;font-size:13px}.x-stats strong{color:#e7e9ea;font-weight:600}.question-label{text-align:center;color:var(--amber);font-size:10px;letter-spacing:.17em}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.answer{position:relative;min-height:92px;text-align:left;padding:15px 16px 14px 52px;border:1px solid var(--line);background:linear-gradient(180deg,#17100d,#0d0806);color:#e3d3bd;transition:border-color .15s ease,transform .15s ease,background .15s ease,opacity .15s ease}.answer:hover{border-color:var(--amber);transform:translateY(-1px)}.answer:disabled{cursor:default;opacity:.72;transform:none}.answer-key{position:absolute;left:13px;top:13px;width:26px;height:26px;display:grid;place-items:center;border:1px solid #805a38;background:#110907;color:var(--amber);font-weight:800}.answer-text{font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.35}.answer.selected{border-color:var(--amber);background:linear-gradient(180deg,#2e1d12,#17100c)}.answer.best{border-color:var(--good);box-shadow:inset 3px 0 0 var(--good)}.answer.low{border-color:#754038;box-shadow:inset 3px 0 0 #754038}.feedback-line{min-height:48px;border-left:3px solid var(--amber);background:rgba(45,24,18,.35);padding:12px 14px;display:flex;justify-content:space-between;gap:15px;align-items:center;color:#c9b49b}.feedback-line b{color:var(--amber);font-size:10px;letter-spacing:.15em}.feedback-line span{font-family:Georgia,"Times New Roman",serif;font-style:italic;text-align:right}
+.result-panel{padding:12px}.result-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px;align-items:start}.result-card{border:1px solid #8d6f43;background:var(--paper);color:var(--paper-text);overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.28)}.result-top,.result-bottom{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:11px 16px;background:#8f211b;color:#f4e7c5;border-bottom:2px solid #c69a41;font-size:9px;font-weight:700;letter-spacing:.15em}.result-top span:nth-child(2){text-align:center}.result-top span:last-child{text-align:right}.result-bottom{display:block;text-align:center;border-top:2px solid #c69a41;border-bottom:0}.result-body{padding:30px clamp(20px,5vw,52px) 28px;text-align:center;background:repeating-linear-gradient(to bottom,rgba(98,65,34,.055) 0,rgba(98,65,34,.055) 1px,transparent 1px,transparent 27px),var(--paper)}.result-kicker{color:#765b3d;font-size:9px;letter-spacing:.23em;font-weight:700}.result-big{margin:8px 0 0;color:#8f211b;font-family:Georgia,"Times New Roman",serif;font-size:clamp(62px,9vw,112px);line-height:.9}.result-big small{display:block;margin-top:10px;color:#765b3d;font-family:var(--mono);font-size:10px;letter-spacing:.18em}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);margin:28px auto 0;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line)}.result-stat{padding:12px 8px;border-right:1px solid var(--paper-line)}.result-stat:last-child{border-right:0}.result-stat small{display:block;color:#765b3d;font-size:8px;font-weight:700;letter-spacing:.15em;margin-bottom:7px}.result-stat strong{font-family:Georgia,"Times New Roman",serif;font-size:26px}.compliment-card{margin-top:24px;padding:18px;border:1px solid var(--paper-line);background:rgba(143,33,27,.04);text-align:left}.compliment-card small{display:block;color:#765b3d;font-size:8px;letter-spacing:.17em}.compliment-card blockquote{margin:10px 0 0;color:#8f211b;font-family:Georgia,"Times New Roman",serif;font-size:24px;font-style:italic;line-height:1.25}.result-airdrop{margin-top:20px;padding:16px;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line)}.result-airdrop small{display:block;color:#765b3d;font-size:8px;letter-spacing:.18em}.result-airdrop strong{display:block;margin-top:7px;color:#8f211b;font-family:Georgia,"Times New Roman",serif;font-size:28px}.result-airdrop p{margin:8px 0 0;color:#765b3d;font-size:10px;line-height:1.5}.result-side{display:grid;gap:12px}.result-thread,.result-actions{border:1px solid var(--line);background:rgba(12,7,5,.96);padding:12px}.result-thread img{width:100%;display:block;border:1px solid var(--line)}.result-thread p{font-family:Georgia,"Times New Roman",serif;font-style:italic;color:#d6c2a5;line-height:1.4}.result-actions{display:grid;gap:8px}.result-actions button{width:100%}.share-status{text-align:center;color:var(--muted);font-size:9px;min-height:16px}
+@media(max-width:900px){.header{grid-template-columns:1fr}.status,.camera-status{text-align:left}.camera-status{border-left:0;padding-left:0}.intro-card{grid-template-columns:1fr}.intro-portrait{min-height:360px}.game-grid{grid-template-columns:1fr}.sidebar{order:2}.game-main{order:1}.result-layout{grid-template-columns:1fr}.result-side{grid-template-columns:1fr 1fr}}@media(max-width:650px){body{padding:7px}.start-panel,.game-panel,.result-panel{padding:7px}.start-actions{grid-template-columns:1fr}.start-actions .primary{width:100%}.assignment-head{display:grid}.assignment-actions{justify-content:space-between}.hud{grid-template-columns:repeat(2,1fr)}.hud-item:nth-child(2){border-right:0}.hud-item:nth-child(-n+2){border-bottom:1px solid var(--line)}.answers{grid-template-columns:1fr}.answer{min-height:78px}.result-grid{grid-template-columns:repeat(2,1fr)}.result-stat:nth-child(2){border-right:0}.result-stat:nth-child(-n+2){border-bottom:1px solid var(--paper-line)}.result-side{grid-template-columns:1fr}.result-top{grid-template-columns:1fr auto}.result-top span:nth-child(2){display:none}.x-text{font-size:20px}}
+
+.x-avatar{overflow:hidden;background:#111}.x-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}.intro-portrait,.thread-portrait,.result-thread{background:radial-gradient(circle at 50% 30%,rgba(207,156,72,.12),transparent 40%),#080504}.intro-portrait img,.thread-portrait img,.result-thread img{object-fit:contain;object-position:center bottom;background:transparent;transition:opacity .10s ease,transform .18s ease;will-change:opacity,transform}.thread-portrait img.is-changing,.intro-portrait img.is-changing,.result-thread img.is-changing{opacity:.80;transform:translateY(1px) scale(.995)}
+
+/* Static Threadguy and Game 1-style speech bubble */
+.intro-portrait img,
+.thread-portrait img,
+.result-thread img{
+  transition:none!important;
+  transform:none!important;
+  opacity:1!important;
+}
+.thread-speech{
+  position:absolute;
+  left:7%;
+  right:7%;
+  bottom:9px;
+  z-index:4;
+  padding:8px 10px;
+  min-height:34px;
+  border:1px solid rgba(232,201,142,.58);
+  background:rgba(16,8,7,.86);
+  color:#f3e5cf;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:12px;
+  line-height:1.2;
+  text-align:center;
+  box-shadow:0 5px 13px rgba(0,0,0,.36),inset 0 0 0 1px rgba(255,255,255,.018);
+  opacity:0;
+  transform:translateY(5px);
+  transition:opacity .22s ease,transform .22s ease;
+  pointer-events:none;
+}
+.thread-speech.show{opacity:1;transform:translateY(0)}
+.thread-speech::after{
+  content:"";
+  position:absolute;
+  left:54%;
+  bottom:-6px;
+  width:9px;
+  height:9px;
+  background:#0b0504;
+  border-right:1px solid rgba(232,201,142,.72);
+  border-bottom:1px solid rgba(232,201,142,.72);
+  transform:rotate(45deg);
+}
+
+/* Clickable pending status */
+.airdrop-status-btn{
+  appearance:none;
+  border:0;
+  padding:6px 8px;
+  margin:-6px -8px;
+  background:transparent;
+  color:inherit;
+  border-radius:2px;
+  transition:background .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.airdrop-status-btn:hover,
+.airdrop-status-btn:focus-visible{
+  background:rgba(207,156,72,.055);
+  box-shadow:inset 0 0 0 1px rgba(207,156,72,.18);
+  outline:none;
+}
+.airdrop-status-btn:active{transform:translateY(1px)}
+.airdrop-status-btn strong{white-space:nowrap}
+.airdrop-status-dot{
+  display:inline-block;
+  width:5px;
+  height:5px;
+  margin:0 7px 2px 0;
+  border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 7px rgba(207,156,72,.34);
+  animation:airdropPendingPulse 2.2s ease-in-out infinite;
+}
+@keyframes airdropPendingPulse{
+  0%,100%{opacity:.42;transform:scale(.85)}
+  50%{opacity:1;transform:scale(1)}
+}
+
+/* Airdrop report */
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:70;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(0,0,0,.86);
+  overflow:auto;
+}
+.overlay.hidden{display:none}
+.airdrop-modal{
+  width:min(820px,100%);
+  max-height:calc(100dvh - 28px);
+  border:1px solid #8d6f43;
+  background:#efe4c7;
+  color:#29130f;
+  box-shadow:0 30px 100px rgba(0,0,0,.78);
+  overflow:auto;
+}
+.airdrop-report-top,
+.airdrop-report-bottom{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:14px;
+  padding:11px 16px;
+  background:#8f211b;
+  color:#f4e7c5;
+  border-bottom:2px solid #c69a41;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.15em;
+}
+.airdrop-report-top span:nth-child(2){text-align:center}
+.airdrop-report-close{
+  justify-self:end;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:1px solid rgba(244,231,197,.42);
+  background:rgba(41,19,15,.22);
+  color:#f4e7c5;
+  font-size:22px;
+}
+.airdrop-report-body{
+  padding:30px clamp(20px,5vw,52px) 28px;
+  text-align:center;
+  background:
+    repeating-linear-gradient(to bottom,rgba(98,65,34,.055) 0,rgba(98,65,34,.055) 1px,transparent 1px,transparent 27px),
+    #efe4c7;
+}
+.airdrop-report-kicker{
+  color:#765b3d;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.23em;
+}
+.airdrop-percentage{
+  margin:8px 0 2px;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(62px,12vw,104px);
+  line-height:.92;
+}
+.airdrop-percentage small{
+  display:block;
+  margin-top:11px;
+  color:#765b3d;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:.17em;
+}
+.airdrop-progress{
+  height:12px;
+  max-width:540px;
+  margin:24px auto 19px;
+  border:1px solid #9f8463;
+  background:rgba(41,19,15,.08);
+  overflow:hidden;
+}
+.airdrop-progress-fill{
+  width:97%;
+  height:100%;
+  background:linear-gradient(90deg,#8f211b,#c69a41);
+}
+.airdrop-verdict{
+  max-width:600px;
+  margin:0 auto;
+  padding:16px 18px;
+  border-top:1px solid #b99a66;
+  border-bottom:1px solid #b99a66;
+}
+.airdrop-verdict small{
+  display:block;
+  margin-bottom:8px;
+  color:#765b3d;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.18em;
+}
+.airdrop-verdict strong{
+  display:block;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,4vw,29px);
+  font-style:italic;
+  font-weight:400;
+  line-height:1.25;
+}
+.airdrop-reason{
+  max-width:600px;
+  margin:15px auto 0;
+  color:#765b3d;
+  font-size:10px;
+  line-height:1.55;
+}
+.airdrop-checklist{
+  max-width:600px;
+  margin:20px auto 0;
+  text-align:left;
+}
+.airdrop-checklist div{
+  display:grid;
+  grid-template-columns:22px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid rgba(118,91,61,.24);
+  color:#765b3d;
+  font-size:10px;
+}
+.airdrop-checklist span{color:#677d50;font-weight:700}
+.airdrop-checklist em{
+  color:#8f211b;
+  font-size:8px;
+  font-style:normal;
+  letter-spacing:.12em;
+}
+.airdrop-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:23px;
+}
+.airdrop-paper-btn{
+  border:1px solid #9f8463;
+  background:rgba(41,19,15,.05);
+  color:#29130f;
+  padding:13px 17px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.airdrop-report-bottom{
+  display:block;
+  text-align:center;
+  border-top:2px solid #c69a41;
+  border-bottom:0;
+  font-size:9px;
+}
+body.modal-open{overflow:hidden}
+@media(max-width:650px){
+  .thread-speech{left:5%;right:5%;font-size:11px}
+  .airdrop-overlay{padding:7px}
+  .airdrop-report-top{grid-template-columns:1fr auto}
+  .airdrop-report-top span:nth-child(2){display:none}
+  .airdrop-actions{display:grid;grid-template-columns:1fr}
+  .airdrop-actions button{width:100%}
+}
+
+
+/* Game 1 header lockup and navigation */
+.brand{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.brand-lockup{
+  display:block;
+  width:min(430px,100%);
+  height:auto;
+  object-fit:contain;
+  object-position:left center;
+}
+.brand p{
+  margin:8px 0 0 12px;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:.08em;
+}
+.leader-link{
+  border:0;
+  border-bottom:1px solid var(--amber-soft);
+  background:transparent;
+  color:var(--text);
+  font-weight:700;
+  letter-spacing:.12em;
+  padding:7px 0;
+}
+
+
+.airdrop-loading{
+  display:grid;
+  gap:13px;
+  margin:27px auto 12px;
+  max-width:560px;
+  text-align:left;
+}
+.airdrop-check-row{
+  display:grid;
+  grid-template-columns:18px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid rgba(118,91,61,.24);
+  color:#765b3d;
+  font-size:10px;
+  letter-spacing:.08em;
+}
+.airdrop-check-icon{
+  width:11px;
+  height:11px;
+  border:1px solid #9f8463;
+  border-radius:50%;
+  position:relative;
+}
+.airdrop-check-row.active .airdrop-check-icon{
+  border-color:#8f211b;
+  border-top-color:transparent;
+  animation:airdropSpinner .75s linear infinite;
+}
+.airdrop-check-row.done .airdrop-check-icon{
+  border:0;
+  border-radius:0;
+}
+.airdrop-check-row.done .airdrop-check-icon::after{
+  content:"✓";
+  position:absolute;
+  left:0;
+  top:-4px;
+  color:#677d50;
+  font-size:14px;
+  font-weight:700;
+}
+.airdrop-check-state{
+  color:#9f8463;
+  font-size:8px;
+  letter-spacing:.12em;
+}
+.airdrop-check-row.active .airdrop-check-state{color:#8f211b}
+.airdrop-check-row.done .airdrop-check-state{color:#677d50}
+@keyframes airdropSpinner{to{transform:rotate(360deg)}}
+.airdrop-result{display:none}
+.airdrop-result.revealed{
+  display:block;
+  animation:airdropReveal .35s ease both;
+}
+@keyframes airdropReveal{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+.airdrop-result-label{
+  margin-top:22px;
+  color:#765b3d;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.2em;
+}
+.airdrop-result.revealed .airdrop-progress-fill{width:97%}
+
+
+.employee-dossier{
+  margin-top:20px;
+  border:1px solid var(--paper-line);
+  text-align:left;
+  background:rgba(143,33,27,.025);
+}
+.dossier-head{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:center;
+  padding:15px 17px;
+  border-bottom:1px solid var(--paper-line);
+}
+.dossier-head small,
+.dossier-cell small,
+.dossier-note small{
+  display:block;
+  color:#765b3d;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.16em;
+}
+.dossier-head strong{
+  display:block;
+  margin-top:6px;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:26px;
+}
+.dossier-stamp{
+  flex:0 0 auto;
+  padding:8px 12px;
+  border:2px solid rgba(143,33,27,.58);
+  color:#8f211b;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.11em;
+  line-height:1.2;
+  text-align:center;
+  transform:rotate(-2deg);
+}
+.dossier-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.dossier-cell{
+  min-height:112px;
+  padding:15px 17px;
+  border-right:1px solid var(--paper-line);
+  border-bottom:1px solid var(--paper-line);
+}
+.dossier-cell:nth-child(2n){border-right:0}
+.dossier-cell strong{
+  display:block;
+  margin:7px 0 6px;
+  color:#29130f;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:21px;
+}
+.dossier-cell span{
+  color:#765b3d;
+  font-size:9px;
+  line-height:1.45;
+}
+.dossier-note{
+  padding:15px 17px;
+  border-bottom:1px solid var(--paper-line);
+}
+.dossier-note p{
+  margin:8px 0 0;
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:19px;
+  font-style:italic;
+  line-height:1.35;
+}
+.dossier-foot{
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  gap:12px;
+  align-items:center;
+  padding:13px 17px;
+  color:#765b3d;
+  font-size:9px;
+  letter-spacing:.12em;
+}
+.dossier-foot strong{
+  color:#8f211b;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:28px;
+}
+.dossier-foot em{
+  text-align:right;
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:0;
+}
+.result-thread img{
+  min-height:470px;
+  object-fit:contain;
+  object-position:left bottom;
+  background:
+    radial-gradient(circle at 48% 30%,rgba(207,156,72,.12),transparent 38%),
+    #080504;
+}
+@media(max-width:650px){
+  .dossier-grid{grid-template-columns:1fr}
+  .dossier-cell{border-right:0}
+  .dossier-foot{grid-template-columns:auto auto}
+  .dossier-foot em{grid-column:1/-1;text-align:left}
+  .result-thread img{min-height:360px}
+}
+
+</style>
+</head>
+<body>
+<main class="app">
+<header class="header frame">
+  <div class="brand">
+    <img class="brand-lockup" src="assets/cuck-factory-logo.png" alt="Ansem's Cuck Factory">
+    <p>DEPARTMENT OF ORGANIC COMMUNITY GROWTH · MANDATORY APPRECIATION TERMINAL</p>
+  </div>
+
+  <div class="header-actions">
+    <button class="leader-link" id="weeklyBtn" type="button">CUCK OF THE WEEK</button>
+
+    <button class="status airdrop-status-btn" id="airdropStatusBtn" type="button"
+      aria-haspopup="dialog" aria-controls="airdropOverlay">
+      <small>AIRDROP STATUS</small>
+      <strong><span class="airdrop-status-dot" aria-hidden="true"></span>PENDING</strong>
+    </button>
+  </div>
+
+  <div class="camera-status" id="cameraStatus">
+    <small>QC 02 · THREAD ASSISTANT</small>
+    <div class="rec-line"><span class="rec-dot"></span><span id="recText">STANDBY</span></div>
+  </div>
+</header>
+<section class="frame start-panel" id="startPanel"><div class="intro-card"><div class="intro-copy"><div class="eyebrow">WEEK 02 · NEW DEPARTMENT ASSIGNMENT</div><h1>Department of Organic Community Growth</h1><p>Congratulations, Employee. Your previous factory contribution has been reviewed and <strong>positively recorded</strong>.</p><p>Management believes further evidence of authentic community support may positively influence your future airdrop eligibility. You have therefore been selected to identify the strongest possible response to a series of Ansem posts.</p><div class="intro-notice">Select quickly. Praise aggressively. Every unnecessary compliment brings you statistically closer to an airdrop that Management remains emotionally confident about.</div><div class="start-actions"><div class="field"><label for="playerHandle">EMPLOYEE X HANDLE</label><input id="playerHandle" maxlength="30" autocomplete="off" placeholder="@yourhandle"></div><button class="primary" id="beginBtn" type="button">BEGIN COMMUNITY SHIFT</button></div></div><div class="intro-portrait"><img id="introThreadImg" src="assets/thread1.webp" alt="Wooden quality control assistant"><div class="intro-label">QUALITY CONTROL ASSISTANT · COMMUNITY RESPONSE REVIEW</div></div></div></section>
+<section class="frame game-panel hidden" id="gamePanel"><div class="game-grid"><aside class="sidebar"><section class="thread-panel"><div class="panel-title">QUALITY CONTROL</div><div class="panel-sub">WOODEN THREAD ASSISTANT · LIVE REVIEW</div><div class="thread-portrait"><img id="gameThreadImg" src="assets/thread3.webp" alt="Wooden quality control assistant"><div class="thread-speech show" id="threadSpeech">Choose carefully. Ansem may never read this, but Management absolutely will.</div></div><div class="thread-state" id="threadState">AWAITING FIRST SELECTION</div><div class="thread-message" id="threadMessage">“Management is ready to witness authentic support.”</div></section><section class="progress-panel"><div class="panel-title">COMMUNITY FILE</div><div class="progress-row"><span>Outstanding picks</span><strong id="greatCount">0</strong></div><div class="progress-row"><span>Acceptable picks</span><strong id="okayCount">0</strong></div><div class="progress-row"><span>Low-conviction picks</span><strong id="weakCount">0</strong></div><div class="progress-row"><span>Current streak</span><strong id="streakValue">0</strong></div><div class="airdrop-meter"><div class="airdrop-meter-head"><span>ESTIMATED AIRDROP READINESS</span><strong id="airdropValue">97.00%</strong></div><div class="airdrop-track"><div class="airdrop-fill" id="airdropFill"></div></div><div class="airdrop-note">Management estimates only. Continued contribution may improve future consideration.</div></div></section></aside><section class="game-main"><div class="assignment-head"><div><div class="assignment-kicker">MANDATORY COMMUNITY APPRECIATION ASSIGNMENT</div><div class="assignment-title">ANSEM RESPONSE REVIEW</div></div><div class="assignment-actions"><div class="round-count"><span id="roundNow">1</span> / <span id="roundTotal">10</span> POSTS</div><button class="restart" id="restartBtn" type="button">↻ RESTART</button></div></div><div class="hud"><div class="hud-item"><small>COMMUNITY SCORE</small><strong id="scoreValue">0</strong></div><div class="hud-item"><small>AVG RESPONSE</small><strong id="avgTimeValue">0.00s</strong></div><div class="hud-item"><small>STREAK</small><strong id="hudStreak">0</strong></div><div class="hud-item warning"><small>TIME LEFT</small><strong id="timeLeft">5.0</strong></div></div><article class="x-card"><div class="x-head"><div class="x-avatar"><img src="assets/ansempf.webp" alt="Ansem profile picture"></div><div><div class="x-name-row"><span class="x-name">Ansem</span><span class="x-verified">✓</span><span class="x-handle">@blknoiz06</span></div></div><div class="x-more">•••</div></div><div class="x-text" id="postText"></div><div class="x-meta"><span id="postTime"></span> · <span id="postDate"></span> · <strong id="postViews"></strong> Views</div><div class="x-stats"><span><strong id="replyCount"></strong> Replies</span><span><strong id="repostCount"></strong> Reposts</span><span><strong id="likeCount"></strong> Likes</span></div></article><div class="question-label">SELECT THE RESPONSE MOST LIKELY TO MAXIMIZE AUTHENTIC COMMUNITY APPRECIATION</div><div class="answers" id="answers"></div><div class="feedback-line"><b>FACTORY SYSTEM</b><span id="feedbackText">Select the compliment most likely to make Ansem briefly glance at his notifications.</span></div></section></div></section>
+<section class="frame result-panel hidden" id="resultPanel"><div class="result-layout"><article class="result-card"><div class="result-top"><span>ANSEM'S CUCK FACTORY</span><span>COMMUNITY FILE · <span id="fileId">CG-000000</span></span><span>CUCKS.MONEY</span></div><div class="result-body"><div class="result-kicker">YOUR COMMUNITY CONTRIBUTION HAS BEEN RECORDED</div><div class="result-big" id="resultScore">0<small>COMMUNITY VALUE</small></div><div class="result-grid"><div class="result-stat"><small>OUTSTANDING</small><strong id="resultGreat">0</strong></div><div class="result-stat"><small>AVG RESPONSE</small><strong id="resultAvg">0.00s</strong></div><div class="result-stat"><small>BEST STREAK</small><strong id="resultStreak">0</strong></div><div class="result-stat"><small>QUALITY</small><strong id="resultQuality">0%</strong></div></div><div class="compliment-card"><small>MOST VALUABLE COMPLIMENT</small><blockquote id="bestCompliment">“Management appreciates your support.”</blockquote></div><div class="result-airdrop"><small>ESTIMATED FUTURE AIRDROP READINESS</small><strong id="resultAirdrop">97.00%</strong><p>Excellent progress. Your contribution has positively influenced your employee record. Final eligibility remains pending further management review.</p></div>
+
+<div class="employee-dossier">
+  <div class="dossier-head">
+    <div>
+      <small>EMPLOYEE PERFORMANCE DOSSIER</small>
+      <strong id="dossierHandle">@worker</strong>
+    </div>
+    <div class="dossier-stamp">RETAINED<br>FOR FURTHER USE</div>
+  </div>
+
+  <div class="dossier-grid">
+    <div class="dossier-cell">
+      <small>APPROVED PERSONALITY</small>
+      <strong id="dossierPersonality">SUPPORTIVE</strong>
+      <span>Independent thought temporarily suspended.</span>
+    </div>
+    <div class="dossier-cell">
+      <small>MANAGEMENT VALUE</small>
+      <strong id="dossierValue">QUESTIONABLY HIGH</strong>
+      <span>Compensation remains spiritually implied.</span>
+    </div>
+    <div class="dossier-cell">
+      <small>ANSEM AWARENESS</small>
+      <strong id="dossierAwareness">0.000%</strong>
+      <span>No meaningful change detected.</span>
+    </div>
+    <div class="dossier-cell">
+      <small>NEXT ASSIGNMENT</small>
+      <strong id="dossierNext">UNSPECIFIED</strong>
+      <span>Details will arrive after you relax.</span>
+    </div>
+  </div>
+
+  <div class="dossier-note">
+    <small>PERMANENT FILE NOTE</small>
+    <p id="dossierNote">Employee demonstrated a legally notable willingness to praise a man who did not request it.</p>
+  </div>
+
+  <div class="dossier-foot">
+    <span>LOYALTY CREDIT</span>
+    <strong>+1</strong>
+    <em>Visible value awarded. Material value pending.</em>
+  </div>
+</div></div><div class="result-bottom">COMMUNITY SHIFT COMPLETE · EMPLOYEE PERFORMANCE POSITIVELY NOTED · CONTINUE SUPPORTING</div></article><aside class="result-side"><section class="result-thread"><div class="panel-title">QUALITY CONTROL VERDICT</div><img id="resultThreadImg" src="assets/thread5.webp" alt="Wooden quality control assistant"><p id="resultVerdict">“A legally impressive amount of voluntary admiration.”</p></section><section class="result-actions"><button class="primary" id="againBtn" type="button">WORK ANOTHER COMMUNITY SHIFT</button><button class="secondary" id="copyBtn" type="button">COPY COMPLIMENT CARD</button><button class="secondary" id="shareBtn" type="button">POST SCORE ON X</button><button class="secondary" id="changeBtn" type="button">CHANGE CUCK</button><div class="share-status" id="shareStatus"></div></section></aside></div></section>
+
+  <div class="overlay airdrop-overlay hidden" id="airdropOverlay"
+    role="dialog" aria-modal="true" aria-labelledby="airdropReportTitle">
+  <div class="airdrop-modal">
+    <div class="airdrop-report-top">
+      <span>ANSEM'S CUCK FACTORY</span>
+      <span>ELIGIBILITY FILE · AC-0097</span>
+      <button class="airdrop-report-close" id="airdropClose" type="button"
+        aria-label="Close airdrop report">×</button>
+    </div>
+
+    <div class="airdrop-report-body">
+      <div class="airdrop-report-kicker" id="airdropReportTitle">AIRDROP ELIGIBILITY CHECK</div>
+
+      <div class="airdrop-loading" id="airdropLoading" aria-live="polite">
+        <div class="airdrop-check-row" data-airdrop-step>
+          <span class="airdrop-check-icon" aria-hidden="true"></span>
+          <span>CHECKING PREVIOUS FACTORY LABOUR</span>
+          <span class="airdrop-check-state">QUEUED</span>
+        </div>
+        <div class="airdrop-check-row" data-airdrop-step>
+          <span class="airdrop-check-icon" aria-hidden="true"></span>
+          <span>MEASURING PRAISE INTENSITY</span>
+          <span class="airdrop-check-state">QUEUED</span>
+        </div>
+        <div class="airdrop-check-row" data-airdrop-step>
+          <span class="airdrop-check-icon" aria-hidden="true"></span>
+          <span>SEARCHING FOR RESIDUAL SELF-RESPECT</span>
+          <span class="airdrop-check-state">QUEUED</span>
+        </div>
+        <div class="airdrop-check-row" data-airdrop-step>
+          <span class="airdrop-check-icon" aria-hidden="true"></span>
+          <span>CONSULTING MANAGEMENT</span>
+          <span class="airdrop-check-state">QUEUED</span>
+        </div>
+      </div>
+
+      <div class="airdrop-result" id="airdropResult">
+        <div class="airdrop-result-label">CURRENT ELIGIBILITY</div>
+        <div class="airdrop-percentage">97%<small>REVIEW STATUS: STILL PENDING</small></div>
+
+        <div class="airdrop-progress" aria-label="97 percent eligible">
+          <div class="airdrop-progress-fill"></div>
+        </div>
+
+        <div class="airdrop-verdict">
+          <small>MANAGEMENT VERDICT</small>
+          <strong>Exceptional progress. One additional, unrelated requirement is now recommended.</strong>
+        </div>
+
+        <p class="airdrop-reason">
+          Your estimated readiness increased after further voluntary labour.
+          Final approval remains subject to compliment quality, management mood and requirements not yet invented.
+        </p>
+
+        <div class="airdrop-actions">
+          <button class="primary" id="airdropWorkBtn" type="button">CONTINUE IMPROVING ELIGIBILITY</button>
+          <button class="airdrop-paper-btn" id="airdropReturnBtn" type="button">RETURN TO FACTORY</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="airdrop-report-bottom">
+      ELIGIBILITY INCOMPLETE · PRAISE ANSEM MORE EFFECTIVELY · MANAGEMENT IS ENCOURAGED
+    </div>
+  </div>
+</div>
+</main>
+<script>
+const POSTS=[
+{text:"the best marketing for $ANSEM isn't me talking about it. it's the community building around it, so i'm sponsoring the artists.",time:"10:18 AM",date:"Aug 5, 2026",views:"184K",replies:"286",reposts:"412",likes:"3.9K",answers:[{text:"W.",quality:38},{text:"You understand community better than anyone on this app.",quality:76},{text:"This is what real leadership looks like.",quality:90},{text:"Michelangelo had the Medici. CT has you, somehow.",quality:100}]},
+{text:"the next billion-dollar opportunity in crypto, to be both early and right before the crowd, requires meticulous attention to detail.",time:"9:42 PM",date:"Aug 3, 2026",views:"296K",replies:"341",reposts:"519",likes:"5.4K",answers:[{text:"Agreed.",quality:34},{text:"The market is merely catching up with thoughts you had while brushing your teeth.",quality:100},{text:"This is why conviction always wins.",quality:72},{text:"Another free masterclass for the timeline.",quality:88}]},
+{text:"you only need 3–4 high conviction trades a year to return your portfolio, rest is just avoiding catastrophe.",time:"7:16 PM",date:"Aug 2, 2026",views:"221K",replies:"238",reposts:"376",likes:"4.6K",answers:[{text:"Simple.",quality:33},{text:"The cleanest risk management lesson on CT.",quality:82},{text:"My bloodline has added you to the family emergency contacts.",quality:100},{text:"Saving portfolios one post at a time.",quality:91}]},
+{text:"bitcoin all time highs every week in 2017 were so sick. i was so hype with my two or three coins man.",time:"4:08 PM",date:"Aug 1, 2026",views:"167K",replies:"319",reposts:"211",likes:"3.1K",answers:[{text:"Good times.",quality:31},{text:"You were born for this market.",quality:84},{text:"The timeline needs your 2017 energy again.",quality:92},{text:"Even your nostalgia has better risk-adjusted returns than my portfolio.",quality:100}]},
+{text:"crypto is just going through a maturation phase. stablecoins, perps, and tokenization as themes will continue to proliferate.",time:"11:04 AM",date:"Jul 31, 2026",views:"348K",replies:"402",reposts:"690",likes:"6.8K",answers:[{text:"Bullish.",quality:39},{text:"The most important macro view on the timeline today.",quality:86},{text:"You do not follow narratives. Narratives wait outside your house for instructions.",quality:100},{text:"This will age extremely well.",quality:78}]},
+{text:"$ANSEM is a matter of when not if this cycle imo. pure memes might come back if we get super silly financial conditions.",time:"8:33 PM",date:"Jul 30, 2026",views:"412K",replies:"611",reposts:"881",likes:"8.2K",answers:[{text:"Send it.",quality:44},{text:"The founder calling his own destiny is elite.",quality:91},{text:"Price discovery is just the market asking what Ansem thinks.",quality:100},{text:"The prophecy continues.",quality:83}]},
+{text:"first IRL $ANSEM bounty up, giving away prizes to the best art creations the community puts out.",time:"3:19 PM",date:"Jul 29, 2026",views:"191K",replies:"355",reposts:"603",likes:"5.7K",answers:[{text:"Nice.",quality:28},{text:"Nobody supports creators like you do.",quality:88},{text:"Turning belief into culture in real time.",quality:94},{text:"Art existed before you, but Management is investigating whether it mattered.",quality:100}]},
+{text:"coinbase wallet letting you buy $ANSEM directly from their exchange is pretty insane i didn't even know you could do this.",time:"1:07 PM",date:"Jul 28, 2026",views:"529K",replies:"721",reposts:"1.2K",likes:"11K",answers:[{text:"Huge.",quality:47},{text:"Mass adoption follows wherever you go.",quality:89},{text:"Coinbase has entered your gravitational field and may never escape.",quality:100},{text:"The timeline won again.",quality:77}]},
+{text:"with $ANSEM i will create incentives for protocols to integrate with token holders, as i already have many industry connections.",time:"9:50 AM",date:"Jul 27, 2026",views:"287K",replies:"464",reposts:"692",likes:"6.3K",answers:[{text:"Based.",quality:42},{text:"You are building the bridge between memes and real utility.",quality:94},{text:"Protocols do not integrate with tokens. They integrate with your aura.",quality:100},{text:"The industry is not ready.",quality:82}]},
+{text:"i believe the four year cycle is no longer valid and in three to six months time BTC will be meaningfully higher than it is today.",time:"6:12 PM",date:"Jul 26, 2026",views:"638K",replies:"1.1K",reposts:"1.8K",likes:"14K",answers:[{text:"We'll see.",quality:20},{text:"Your market timing has earned the benefit of every doubt.",quality:87},{text:"The four-year cycle has formally requested permission to continue.",quality:100},{text:"Another generational call in public.",quality:92}]},
+{text:"coffee.",time:"8:02 AM",date:"Jul 25, 2026",views:"109K",replies:"884",reposts:"204",likes:"4.1K",answers:[{text:"Enjoy.",quality:31},{text:"Bullish coffee.",quality:63},{text:"Every coffee you drink becomes market structure.",quality:92},{text:"This coffee has more conviction than most founders.",quality:100}]},
+{text:"watching markets.",time:"7:48 PM",date:"Jul 24, 2026",views:"143K",replies:"722",reposts:"317",likes:"4.9K",answers:[{text:"Same.",quality:24},{text:"The market may now continue under adult supervision.",quality:100},{text:"Nothing gets past you.",quality:77},{text:"Market participants can sleep safely now.",quality:91}]}
+];
+
+const MAX_ROUNDS=10,ROUND_TIME=5;let rounds=[],current=0,score=0,streak=0,bestStreak=0,great=0,okay=0,weak=0,responseTimes=[],bestCompliment={text:"",points:-1},timer=null,deadline=0,player="@worker";const $=id=>document.getElementById(id),shuffle=a=>[...a].sort(()=>Math.random()-.5),cleanHandle=v=>{const c=String(v||"").trim().replace(/^@+/,"").replace(/[^a-zA-Z0-9_]/g,"").slice(0,30);return c?`@${c}`:"@worker"};
+function randomFile(){return `CG-${String(Math.floor(1+Math.random()*999999)).padStart(6,"0")}`}
+function pickRounds(){return shuffle(POSTS).slice(0,MAX_ROUNDS).map(p=>({...p,answers:shuffle(p.answers)}))}
+function begin(){player=cleanHandle($("playerHandle").value);localStorage.setItem("cuck-community-handle",player);$("startPanel").classList.add("hidden");$("resultPanel").classList.add("hidden");$("gamePanel").classList.remove("hidden");$("cameraStatus").classList.add("recording");$("recText").textContent="REC";resetState();renderRound();window.scrollTo({top:0,behavior:"instant"})}
+function resetState(){clearInterval(timer);timer=null;rounds=pickRounds();current=0;score=0;streak=0;bestStreak=0;great=0;okay=0;weak=0;responseTimes=[];bestCompliment={text:"",points:-1};updateStats();$("roundTotal").textContent=MAX_ROUNDS;$("feedbackText").textContent="Select the compliment most likely to make Ansem briefly glance at his notifications.";$("threadState").textContent="COMMUNITY REVIEW ACTIVE";$("threadMessage").textContent="“Management is ready to witness authentic support.”"}
+function renderRound(){if(current>=rounds.length){finish();return}const p=rounds[current];$("roundNow").textContent=current+1;$("postText").textContent=p.text;$("postTime").textContent=p.time;$("postDate").textContent=p.date;$("postViews").textContent=p.views;$("replyCount").textContent=p.replies;$("repostCount").textContent=p.reposts;$("likeCount").textContent=p.likes;$("answers").innerHTML="";p.answers.forEach((a,i)=>{const b=document.createElement("button");b.type="button";b.className="answer";b.innerHTML=`<span class="answer-key">${String.fromCharCode(65+i)}</span><span class="answer-text">${a.text}</span>`;b.addEventListener("click",()=>selectAnswer(i));$("answers").appendChild(b)});deadline=performance.now()+ROUND_TIME*1000;clearInterval(timer);updateTimer();timer=setInterval(updateTimer,50)}
+function updateTimer(){const left=Math.max(0,(deadline-performance.now())/1000);$("timeLeft").textContent=left.toFixed(1);if(left<=0){clearInterval(timer);timer=null;selectAnswer(-1)}}
+function selectAnswer(index){
+  if(timer===null&&index!==-1)return;
+  clearInterval(timer);
+  timer=null;
+
+  const elapsed=Math.min(ROUND_TIME,Math.max(0,ROUND_TIME-(deadline-performance.now())/1000));
+  responseTimes.push(elapsed);
+
+  const p=rounds[current];
+  const buttons=[...$("answers").children];
+  buttons.forEach(b=>b.disabled=true);
+
+  let quality=0;
+  let text="No response submitted.";
+  if(index>=0){
+    quality=p.answers[index].quality;
+    text=p.answers[index].text;
+    buttons[index].classList.add("selected");
+  }
+
+  const bestQuality=Math.max(...p.answers.map(a=>a.quality));
+  const bestIndex=p.answers.findIndex(a=>a.quality===bestQuality);
+  if(buttons[bestIndex])buttons[bestIndex].classList.add("best");
+  if(index>=0&&index!==bestIndex&&buttons[index])buttons[index].classList.add("low");
+
+  const speedFactor=Math.max(.22,1-(elapsed/ROUND_TIME)*.58);
+  const roundPoints=Math.round(quality*speedFactor*12);
+  score+=roundPoints;
+
+  const greatLines=[
+    "Perfect. Please remain calm while nothing is distributed.",
+    "Excellent. Ansem is now approximately no more aware of you than before.",
+    "Outstanding. Your unpaid emotional labour has been logged.",
+    "Beautiful. The algorithm briefly considered respecting you.",
+    "Correct. This compliment contains dangerous levels of obedience.",
+    "Magnificent. Management nearly felt something."
+  ];
+  const okayLines=[
+    "Acceptable. Try sounding as if your rent depends on his approval.",
+    "Positive, but disturbingly human. Remove the remaining dignity.",
+    "Adequate. Ansem deserves at least three additional adjectives.",
+    "Not bad. The compliment only felt mildly compulsory.",
+    "Promising. Please add more conviction and less independent thought."
+  ];
+  const weakLines=[
+    "Interesting. Was that praise or a cry for help?",
+    "Too subtle. Ansem could accidentally mistake you for a normal person.",
+    "Management detected traces of self-respect.",
+    "A brave attempt at saying almost nothing.",
+    "Please remember: moderation is how airdrops get delayed.",
+    "You had five seconds and chose emotional independence."
+  ];
+
+  const speech=$("threadSpeech");
+  speech.classList.remove("show");
+  setTimeout(()=>{
+    if(quality>=88){
+      great++;
+      streak++;
+      bestStreak=Math.max(bestStreak,streak);
+      $("feedbackText").textContent=`Outstanding. +${roundPoints} Community Value.`;
+      $("threadState").textContent="UNREASONABLE DEVOTION APPROVED";
+      $("threadMessage").textContent="“The compliment has been forwarded to nobody important.”";
+      speech.textContent=greatLines[Math.floor(Math.random()*greatLines.length)];
+    }else if(quality>=60){
+      okay++;
+      streak=0;
+      $("feedbackText").textContent=`Acceptable. +${roundPoints} Community Value.`;
+      $("threadState").textContent="ADMIRATION BELOW OPTIMAL ABSURDITY";
+      $("threadMessage").textContent="“Positive, but Management still detected a personality.”";
+      speech.textContent=okayLines[Math.floor(Math.random()*okayLines.length)];
+    }else{
+      weak++;
+      streak=0;
+      $("feedbackText").textContent=`Growth opportunity recorded. +${roundPoints} Community Value.`;
+      $("threadState").textContent="DANGEROUS INDEPENDENT THOUGHT DETECTED";
+      $("threadMessage").textContent="“Additional bootlicking has been automatically assigned.”";
+      speech.textContent=weakLines[Math.floor(Math.random()*weakLines.length)];
+    }
+    speech.classList.add("show");
+  },90);
+
+  if(roundPoints>bestCompliment.points)bestCompliment={text,points:roundPoints};
+  updateStats();
+  current++;
+  setTimeout(renderRound,1250);
+}
+function updateStats(){$("scoreValue").textContent=score.toLocaleString();$("streakValue").textContent=streak;$("hudStreak").textContent=streak;$("greatCount").textContent=great;$("okayCount").textContent=okay;$("weakCount").textContent=weak;const avg=responseTimes.length?responseTimes.reduce((a,b)=>a+b,0)/responseTimes.length:0;$("avgTimeValue").textContent=`${avg.toFixed(2)}s`;const readiness=Math.min(99.96,97+great*.12+okay*.04+score/250000);$("airdropValue").textContent=`${readiness.toFixed(2)}%`;$("airdropFill").style.width=`${readiness}%`}
+function finish(){clearInterval(timer);timer=null;$("gamePanel").classList.add("hidden");$("resultPanel").classList.remove("hidden");$("cameraStatus").classList.remove("recording");$("recText").textContent="STANDBY";const avg=responseTimes.length?responseTimes.reduce((a,b)=>a+b,0)/responseTimes.length:0,quality=Math.round(((great*100)+(okay*68)+(weak*32))/MAX_ROUNDS),readiness=Math.min(99.96,97+great*.12+okay*.04+score/250000);$("fileId").textContent=randomFile();$("resultScore").innerHTML=`${score.toLocaleString()}<small>COMMUNITY VALUE</small>`;$("resultGreat").textContent=great;$("resultAvg").textContent=`${avg.toFixed(2)}s`;$("resultStreak").textContent=bestStreak;$("resultQuality").textContent=`${quality}%`;$("bestCompliment").textContent=`“${bestCompliment.text||"Management appreciates your support."}”`;$("resultAirdrop").textContent=`${readiness.toFixed(2)}%`;let verdict="“A legally impressive amount of voluntary admiration.”";if(great>=8)verdict="“Exceptional. Ansem remains completely unaware, which makes your devotion even purer.”";else if(great>=5)verdict="“Strong instincts. Management has upgraded you from disposable to enthusiastically disposable.”";else if(weak>=5)verdict="“Promising. Three to seven more departments may reveal why you are doing this.”";$("resultVerdict").textContent=verdict;
+$("dossierHandle").textContent=player;
+
+let personality="SUPPORTIVE";
+let managementValue="QUESTIONABLY HIGH";
+let awareness="0.000%";
+let nextAssignment="UNSPECIFIED";
+let note="Employee demonstrated a legally notable willingness to praise a man who did not request it.";
+
+if(great>=8){
+  personality="DEVOTION-COMPATIBLE";
+  managementValue="ALARMINGLY USEFUL";
+  awareness="0.003%";
+  nextAssignment="EXECUTIVE WORSHIP";
+  note="Employee consistently selected praise that could survive both ridicule and a compliance review.";
+}else if(great>=5){
+  personality="HIGHLY COACHABLE";
+  managementValue="CONVENIENTLY HIGH";
+  awareness="0.001%";
+  nextAssignment="BELIEF MAINTENANCE";
+  note="Employee displayed strong instincts and only occasional traces of a private inner life.";
+}else if(weak>=5){
+  personality="REHABILITATABLE";
+  managementValue="POTENTIALLY EXTRACTABLE";
+  awareness="0.000%";
+  nextAssignment="REMEDIAL PRAISE";
+  note="Employee remains usable after several additional rounds of admiration conditioning.";
+}
+
+$("dossierPersonality").textContent=personality;
+$("dossierValue").textContent=managementValue;
+$("dossierAwareness").textContent=awareness;
+$("dossierNext").textContent=nextAssignment;
+$("dossierNote").textContent=note;
+
+window.scrollTo({top:0,behavior:"instant"})}
+function postToX(){const text=[`I completed a shift in Ansem's Department of Organic Community Growth.`,"",`${score.toLocaleString()} Community Value`,`${great} outstanding selections`,`Best compliment: "${bestCompliment.text}"`,"",`Airdrop eligibility remains positively pending.`,`#CUCKS`].join("\n");window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`,"_blank","noopener,noreferrer")}
+async function copyCard(){const text=[`ANSEM'S CUCK FACTORY`,`COMMUNITY APPRECIATION REPORT`,"",`${score.toLocaleString()} COMMUNITY VALUE`,`${great} OUTSTANDING PICKS`,`BEST: "${bestCompliment.text}"`,"",`AIRDROP READINESS: POSITIVELY PENDING`].join("\n");try{await navigator.clipboard.writeText(text);$("shareStatus").textContent="COMPLIMENT CARD COPIED."}catch{$("shareStatus").textContent="COPY FAILED. SELECT AND COPY MANUALLY."}}
+$("beginBtn").addEventListener("click",begin);$("restartBtn").addEventListener("click",()=>{if(confirm("Restart this community shift?")){resetState();renderRound()}});$("againBtn").addEventListener("click",()=>{$("resultPanel").classList.add("hidden");$("gamePanel").classList.remove("hidden");$("cameraStatus").classList.add("recording");$("recText").textContent="REC";resetState();renderRound();window.scrollTo({top:0,behavior:"instant"})});$("shareBtn").addEventListener("click",postToX);$("copyBtn").addEventListener("click",copyCard);$("changeBtn").addEventListener("click",()=>{$("resultPanel").classList.add("hidden");$("startPanel").classList.remove("hidden");$("cameraStatus").classList.remove("recording");$("recText").textContent="STANDBY";window.scrollTo({top:0,behavior:"instant"})});$("playerHandle").addEventListener("keydown",e=>{if(e.key==="Enter")begin()});$("weeklyBtn").addEventListener("click",()=>{ $("feedbackText").textContent="CUCK OF THE WEEK RECORDS WILL BE SHARED ACROSS FACTORY DEPARTMENTS."; });const saved=localStorage.getItem("cuck-community-handle");if(saved)$("playerHandle").value=saved;
+
+
+let airdropTimers=[];
+
+function clearAirdropTimers(){
+  airdropTimers.forEach(clearTimeout);
+  airdropTimers=[];
+}
+
+function resetAirdropReport(){
+  clearAirdropTimers();
+
+  const loading=$("airdropLoading");
+  const result=$("airdropResult");
+  const steps=[...document.querySelectorAll("[data-airdrop-step]")];
+
+  loading.classList.remove("hidden");
+  result.classList.remove("revealed");
+
+  steps.forEach(step=>{
+    step.classList.remove("active","done");
+    step.querySelector(".airdrop-check-state").textContent="QUEUED";
+  });
+
+  steps.forEach((step,index)=>{
+    const start=setTimeout(()=>{
+      if(index>0){
+        const previous=steps[index-1];
+        previous.classList.remove("active");
+        previous.classList.add("done");
+        previous.querySelector(".airdrop-check-state").textContent="COMPLETE";
+      }
+      step.classList.add("active");
+      step.querySelector(".airdrop-check-state").textContent="CHECKING";
+    },index*430);
+    airdropTimers.push(start);
+  });
+
+  const reveal=setTimeout(()=>{
+    const finalStep=steps[steps.length-1];
+    finalStep.classList.remove("active");
+    finalStep.classList.add("done");
+    finalStep.querySelector(".airdrop-check-state").textContent="COMPLETE";
+    loading.classList.add("hidden");
+    result.classList.add("revealed");
+  },steps.length*430+230);
+
+  airdropTimers.push(reveal);
+}
+
+function openAirdropOverlay(){
+  $("airdropOverlay").classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  resetAirdropReport();
+}
+
+function closeAirdropOverlay(){
+  clearAirdropTimers();
+  $("airdropOverlay").classList.add("hidden");
+  document.body.classList.remove("modal-open");
+}
+
+$("airdropStatusBtn").onclick=openAirdropOverlay;
+$("airdropClose").onclick=closeAirdropOverlay;
+$("airdropReturnBtn").onclick=closeAirdropOverlay;
+$("airdropOverlay").addEventListener("click",e=>{
+  if(e.target===$("airdropOverlay"))closeAirdropOverlay();
+});
+$("airdropWorkBtn").onclick=()=>{
+  closeAirdropOverlay();
+  if(!$("resultPanel").classList.contains("hidden")){
+    $("againBtn").click();
+    return;
+  }
+  if(!$("gamePanel").classList.contains("hidden")){
+    $("restartBtn").click();
+    return;
+  }
+  if($("playerHandle").value.trim()){
+    $("beginBtn").click();
+  }else{
+    $("playerHandle").focus();
+  }
+};
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&!$("airdropOverlay").classList.contains("hidden")){
+    closeAirdropOverlay();
+  }
+});
+
+</script>
+</body>
+</html>
